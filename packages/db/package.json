@@ -1,0 +1,26 @@
+{
+  "name": "db",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "migrate:dev": "pnpm dlx prisma migrate dev",
+    "prisma:push": "pnpm dlx prisma db push",
+    "prisma:generate": "pnpm dlx prisma generate",
+    "studio:dev": "pnpm dlx prisma studio"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.8.4",
+    "prisma": "^5.4.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.4.2"
+  }
+}

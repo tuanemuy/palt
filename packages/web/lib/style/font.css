@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "Tazugane";
+  src: url("../../public/fonts/TazuganeGothicStdN-Regular.woff2")
+      format("woff2"),
+    url("../../public/fonts/TazuganeGothicStdN-Regular.woff") format("woff");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tazugane";
+  src: url("../../public/fonts/TazuganeGothicStdN-Medium.woff2") format("woff2"),
+    url("../../public/fonts/TazuganeGothicStdN-Medium.woff") format("woff");
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tazugane";
+  src: url("../../public/fonts/TazuganeGothicStdN-Bold.woff2") format("woff2"),
+    url("../../public/fonts/TazuganeGothicStdN-Bold.woff") format("woff");
+  font-weight: 700;
+  font-display: swap;
+}

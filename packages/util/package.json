@@ -1,0 +1,39 @@
+{
+  "name": "util",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "main": "index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.ts",
+        "default": "./index.ts"
+      }
+    },
+    "./form": {
+      "import": {
+        "types": "./form.ts",
+        "default": "./form.ts"
+      }
+    },
+    "./s3": {
+      "import": {
+        "types": "./s3.ts",
+        "default": "./s3.ts"
+      }
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hookform/resolvers": "^3.3.2",
+    "react-hook-form": "^7.47.0",
+    "zod": "^3.22.4"
+  }
+}

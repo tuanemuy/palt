@@ -1,0 +1,365 @@
+@layer recipes.slots {
+  .toast__root--variant_default {
+    border: var(--borders-base);
+    background: var(--colors-background);
+    }
+
+  .toast__root--variant_destructive {
+    border: var(--borders-destructive);
+    background: var(--colors-destructive);
+    color: var(--colors-destructive-foreground);
+    }
+
+  .toast__action--variant_destructive {
+    --sp-bca: color-mix(in srgb, transparent 60%, var(--colors-muted));
+    border-color: var(--sp-bca, var(--colors-muted));
+    }
+
+  .toast__close--variant_destructive {
+    color: var(--colors-red-300);
+    }
+
+  .toast__action--variant_destructive:is(:focus, [data-focus]) {
+    --shadow-panda-ring-color: var(--colors-destructive)
+    ;
+        }
+
+  .toast__close--variant_destructive:is(:focus, [data-focus]) {
+    --shadow-panda-ring-color: var(--colors-red-400)
+    ;
+    --shadow-panda-ring-offset-color: var(--colors-red-600)
+    ;
+        }
+
+  .toast__action--variant_destructive:is(:hover, [data-hover]) {
+    --sp-bca: color-mix(in srgb, transparent 70%, var(--colors-destructive));
+    border-color: var(--sp-bca, var(--colors-destructive));
+    background: var(--colors-destructive);
+    color: var(--colors-destructive-foreground);
+        }
+
+  .toast__close--variant_destructive:is(:hover, [data-hover]) {
+    color: var(--colors-red-50);
+        }
+
+  @layer _base {
+
+    .toast__root {
+      pointer-events: auto;
+      position: relative;
+      display: flex;
+      width: var(--sizes-full);
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-4);
+      overflow: hidden;
+      border-radius: var(--radii-md);
+      border: var(--borders-base);
+      padding: var(--spacing-6);
+      padding-right: var(--spacing-8);
+      box-shadow: var(--shadows-lg);
+      transition-property: var(--transition-prop, all);
+      transition-timing-function: var(--transition-easing, cubic-bezier(0.4, 0, 0.2, 1));
+      transition-duration: var(--transition-duration, 150ms);
+        }
+
+    .toast__root[data-swipe=cancel] {
+      transform: translateX(0);
+            }
+
+    .toast__root[data-swipe=end] {
+      transform: translateX(var(--radix-toast-swipe-end-x));
+      animation-name: exit;
+      animation-duration: var(--durations-fast);
+      --shadow-panda-exit-opacity: 1;
+      --shadow-panda-exit-scale: 1;
+      --shadow-panda-exit-rotate: 0;
+      --shadow-panda-exit-translate-x: 0;
+      --shadow-panda-exit-translate-y: 0
+    ;
+            }
+
+    .toast__root[data-swipe=move] {
+      transform: translateX(var(--radix-toast-swipe-move-x));
+      transition: none;
+            }
+
+    .toast__root[data-state=open] {
+      animation-name: enter;
+      animation-duration: var(--durations-fast);
+      --shadow-panda-enter-opacity: 1;
+      --shadow-panda-enter-scale: 1;
+      --shadow-panda-enter-rotate: 0;
+      --shadow-panda-enter-translate-x: 0;
+      --shadow-panda-enter-translate-y: calc(100% * -1)
+    ;
+            }
+
+    .toast__root[data-state=closed] {
+      animation-name: exit;
+      animation-duration: var(--durations-fast);
+      --shadow-panda-exit-opacity: 0.8
+    ;
+      --shadow-panda-exit-scale: 1;
+      --shadow-panda-exit-rotate: 0;
+      --shadow-panda-exit-translate-x: 100%
+    ;
+      --shadow-panda-exit-translate-y: 0
+    ;
+            }
+
+    .toast__action {
+      display: inline-flex;
+      height: var(--sizes-8);
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radii-md);
+      border: var(--borders-base);
+      background: var(--colors-transparent);
+      padding-inline: var(--spacing-3);
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      font-weight: var(--font-weights-medium);
+      --shadow-panda-ring-offset-color: var(--colors-background);
+      transition-property: var(--transition-prop, color, background-color, border-color, outline-color, text-decoration-color, fill, stroke);
+      transition-timing-function: var(--transition-easing, cubic-bezier(0.4, 0, 0.2, 1));
+      transition-duration: var(--transition-duration, 150ms);
+      cursor: pointer;
+        }
+
+    .toast__action:is(:disabled, [disabled], [data-disabled]) {
+      pointer-events: none;
+      opacity: 0.5;
+            }
+
+    .toast__close {
+      position: absolute;
+      right: var(--spacing-2);
+      top: var(--spacing-2);
+      border-radius: var(--radii-md);
+      padding: var(--spacing-1);
+      --sp-ca: color-mix(in srgb, transparent 50%, var(--colors-foreground));
+      color: var(--sp-ca, var(--colors-foreground));
+      opacity: 0;
+      transition-property: var(--transition-prop, opacity);
+      transition-timing-function: var(--transition-easing, cubic-bezier(0.4, 0, 0.2, 1));
+      transition-duration: var(--transition-duration, 150ms);
+      cursor: pointer;
+        }
+
+    .toast__title {
+      font-weight: var(--font-weights-semibold);
+        }
+
+    .toast__title,.toast__description {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+        }
+
+    .toast__description {
+      opacity: 0.9;
+        }
+
+    .badge {
+      border-radius: var(--radii-full);
+      border: var(--borders-base);
+      padding-inline: var(--spacing-2\.5);
+      padding-block: var(--spacing-0\.5);
+      font-size: 0.75rem;
+      line-height: 1rem;
+      font-weight: var(--font-weights-semibold);
+        }
+
+    .badge,.button {
+      display: inline-flex;
+      align-items: center;
+      transition-property: var(--transition-prop, color, background-color, border-color, outline-color, text-decoration-color, fill, stroke);
+      transition-timing-function: var(--transition-easing, cubic-bezier(0.4, 0, 0.2, 1));
+      transition-duration: var(--transition-duration, 150ms);
+      --shadow-panda-ring-offset-color: var(--colors-background);
+        }
+
+    .button {
+      justify-content: center;
+      border-radius: var(--radii-md);
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      font-weight: var(--font-weights-medium);
+      cursor: pointer;
+      gap: var(--spacing-2);
+        }
+
+    .button:is(:disabled, [disabled], [data-disabled]) {
+      pointer-events: none;
+      opacity: 50%;
+            }
+
+    .toast__action:is(:focus, [data-focus]) {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      --shadow-panda-ring-offset-shadow: var(--shadow-panda-ring-inset,) 0 0 0 var(--shadow-panda-ring-offset-width, 0px) var(--shadow-panda-ring-offset-color);
+      --shadow-panda-ring-shadow: var(--shadow-panda-ring-inset,) 0 0 0 calc(2px + var(--shadow-panda-ring-offset-width, 0px)) var(--shadow-panda-ring-color);
+      box-shadow: var(--shadow-panda-ring-offset-shadow),var(--shadow-panda-ring-shadow),var(--shadow-panda-base-shadow,0 0 #0000);
+      --shadow-panda-ring-color: var(--colors-ring)
+    ;
+      --shadow-panda-ring-offset-width: 2px
+    ;
+            }
+
+    .toast__close:is(:focus, [data-focus]) {
+      opacity: 1;
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      --shadow-panda-ring-offset-shadow: var(--shadow-panda-ring-inset,) 0 0 0 var(--shadow-panda-ring-offset-width, 0px) var(--shadow-panda-ring-offset-color);
+      --shadow-panda-ring-shadow: var(--shadow-panda-ring-inset,) 0 0 0 calc(2px + var(--shadow-panda-ring-offset-width, 0px)) var(--shadow-panda-ring-color);
+      box-shadow: var(--shadow-panda-ring-offset-shadow),var(--shadow-panda-ring-shadow),var(--shadow-panda-base-shadow,0 0 #0000);
+      --shadow-panda-ring-color: var(--colors-ring)
+    ;
+      --shadow-panda-ring-offset-width: 2px
+    ;
+            }
+
+    .badge:is(:focus, [data-focus]) {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      --shadow-panda-ring-offset-shadow: var(--shadow-panda-ring-inset,) 0 0 0 var(--shadow-panda-ring-offset-width, 0px) var(--shadow-panda-ring-offset-color);
+      --shadow-panda-ring-shadow: var(--shadow-panda-ring-inset,) 0 0 0 calc(2px + var(--shadow-panda-ring-offset-width, 0px)) var(--shadow-panda-ring-color);
+      box-shadow: var(--shadow-panda-ring-offset-shadow),var(--shadow-panda-ring-shadow),var(--shadow-panda-base-shadow,0 0 #0000);
+      --shadow-panda-ring-color: var(--colors-ring)
+    ;
+      --shadow-panda-ring-offset-width: 2px
+    ;
+            }
+
+    .button:is(:focus-visible, [data-focus-visible]) {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      --shadow-panda-ring-offset-shadow: var(--shadow-panda-ring-inset,) 0 0 0 var(--shadow-panda-ring-offset-width, 0px) var(--shadow-panda-ring-offset-color);
+      --shadow-panda-ring-shadow: var(--shadow-panda-ring-inset,) 0 0 0 calc(2px + var(--shadow-panda-ring-offset-width, 0px)) var(--shadow-panda-ring-color);
+      box-shadow: var(--shadow-panda-ring-offset-shadow),var(--shadow-panda-ring-shadow),var(--shadow-panda-base-shadow,0 0 #0000);
+      --shadow-panda-ring-color: var(--colors-ring)
+    ;
+      --shadow-panda-ring-offset-width: 2px
+    ;
+            }
+
+    .toast__action:is(:hover, [data-hover]) {
+      background: var(--colors-secondary);
+            }
+
+    .toast__close:is(:hover, [data-hover]) {
+      color: var(--colors-foreground);
+            }
+
+    .group:is(:hover, [data-hover]) .toast__close {
+      opacity: 1;
+            }
+
+    @media screen and (min-width: 40em) {
+      .toast__root[data-state=open] {
+        --shadow-panda-enter-translate-y: 100%
+        ;
+                }
+            }
+    }
+}
+
+@layer recipes {
+  .badge--variant_default {
+    border-color: var(--colors-transparent);
+    background: var(--colors-primary);
+    color: var(--colors-primary-foreground);
+    }
+
+  .badge--variant_secondary {
+    border-color: var(--colors-transparent);
+    background: var(--colors-secondary);
+    color: var(--colors-secondary-foreground);
+    }
+
+  .badge--variant_destructive {
+    border-color: var(--colors-transparent);
+    background: var(--colors-destructive);
+    color: var(--colors-destructive-foreground);
+    }
+
+  .badge--variant_outline {
+    color: var(--colors-foreground);
+    }
+
+  .button--variant_default {
+    background: var(--colors-primary);
+    color: var(--colors-primary-foreground);
+    }
+
+  .button--variant_destructive {
+    background: var(--colors-destructive);
+    color: var(--colors-destructive-foreground);
+    }
+
+  .button--variant_outline {
+    border: var(--borders-input);
+    background: var(--colors-background);
+    }
+
+  .button--variant_secondary {
+    background: var(--colors-secondary);
+    color: var(--colors-secondary-foreground);
+    }
+
+  .button--variant_link {
+    color: var(--colors-primary);
+    text-underline-offset: 4px;
+    }
+
+  .button--size_default {
+    height: var(--sizes-10);
+    padding-inline: var(--spacing-4);
+    padding-block: var(--spacing-2);
+    }
+
+  .badge--variant_default:is(:hover, [data-hover]) {
+    --sp-bga: color-mix(in srgb, transparent 20%, var(--colors-primary));
+    background-color: var(--sp-bga, var(--colors-primary));
+        }
+
+  .badge--variant_secondary:is(:hover, [data-hover]) {
+    --sp-bga: color-mix(in srgb, transparent 20%, var(--colors-secondary));
+    background-color: var(--sp-bga, var(--colors-secondary));
+        }
+
+  .badge--variant_destructive:is(:hover, [data-hover]) {
+    --sp-bga: color-mix(in srgb, transparent 20%, var(--colors-destructive));
+    background-color: var(--sp-bga, var(--colors-destructive));
+        }
+
+  .button--variant_default:is(:hover, [data-hover]) {
+    --sp-bga: color-mix(in srgb, transparent 10%, var(--colors-primary));
+    background-color: var(--sp-bga, var(--colors-primary));
+        }
+
+  .button--variant_destructive:is(:hover, [data-hover]) {
+    --sp-bga: color-mix(in srgb, transparent 10%, var(--colors-destructive));
+    background-color: var(--sp-bga, var(--colors-destructive));
+        }
+
+  .button--variant_outline:is(:hover, [data-hover]) {
+    background: var(--colors-accent);
+    color: var(--colors-accent-foreground);
+        }
+
+  .button--variant_secondary:is(:hover, [data-hover]) {
+    --sp-bga: color-mix(in srgb, transparent 10%, var(--colors-secondary));
+    background-color: var(--sp-bga, var(--colors-secondary));
+        }
+
+  .button--variant_ghost:is(:hover, [data-hover]) {
+    background: var(--colors-accent);
+    color: var(--colors-accent-foreground);
+        }
+
+  .button--variant_link:is(:hover, [data-hover]) {
+    text-decoration: underline;
+        }
+}
