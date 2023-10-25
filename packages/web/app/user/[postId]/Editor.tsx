@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
+import twitter from "twitter-text";
+import { createId } from "@paralleldrive/cuid2";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import { Post, Tag } from "db";
-import { SinglePost } from "../_action";
+import TipTapImage from "@tiptap/extension-image";
+import { getUrl } from "core/file";
+import { useToast } from "@/components/ui/toast";
+import { uploadFileOnPost, cleanFilesOnPost } from "../_action";
 
 import { Flex, styled } from "@/lib/style/system/jsx";
 import { Toggle } from "@/components/ui/toggle";
@@ -29,40 +33,54 @@ import {
   Bold,
   Italic,
   LinkIcon,
+  Image,
   Indent,
   Outdent,
 } from "lucide-react";
 
 type Props = {
-  post: SinglePost;
-  onChange: (body: string, tags: Tag[]) => void;
+  postId: string;
+  initialContent: string;
+  onChangeBody: (body: string) => void;
+  onChangeTags: (tags: string[]) => void;
   isEditable?: boolean;
 };
 
-function extractTag(body: string) {
-  const result = body.match(/(?<=\s|^)#(\w+)/);
+function extractTags(body: string): string[] {
+  return twitter.extractHashtags(body);
 }
 
-export function Editor({ post, onChange, isEditable = true }: Props) {
+export function Editor({
+  postId,
+  initialContent,
+  onChangeBody,
+  onChangeTags,
+  isEditable = true,
+}: Props) {
   const iconSize = 18;
+  const { toast } = useToast();
+  const imageRef = useRef<HTMLInputElement>(null);
 
-  const [body, setBody] = useState(post.body);
-  const [tags, setTags] = useState(post.postTags.map((pt) => pt.tag));
+  const [body, setBody] = useState(initialContent);
 
   const editor = useEditor({
-    extensions: [StarterKit, Link],
-    content: post.body,
+    extensions: [StarterKit, Link, TipTapImage],
+    content: initialContent,
     autofocus: true,
     editable: isEditable,
     injectCSS: false,
     onUpdate: ({ editor }) => {
       setBody(editor.getHTML());
     },
+    onDestroy: () => {
+      cleanFilesOnPost({ postId });
+    },
   });
 
   useEffect(() => {
     const id = setTimeout(() => {
-      onChange(body, tags);
+      onChangeBody(body);
+      onChangeTags(extractTags(body));
     }, 1000);
 
     return () => {
@@ -96,13 +114,10 @@ export function Editor({ post, onChange, isEditable = true }: Props) {
           fontWeight: "bold",
           lineHeight: "1.5",
         },
-        "& ul, & ol, & table, & img, & code, & blockquote, & dl, & iframe, & pre":
+        "& p, & ul, & ol, & table, & img, & code, & blockquote, & dl, & iframe, & pre":
           {
-            mt: "2rem",
+            mt: "1rem",
           },
-        "& p": {
-          mt: "1rem",
-        },
         "& h1": {
           fontSize: "1.75rem",
         },
@@ -181,8 +196,8 @@ export function Editor({ post, onChange, isEditable = true }: Props) {
         },
       }}
     >
-      {editor && post && <EditorContent editor={editor} />}
-      {(!editor || !post) && (
+      {editor && <EditorContent editor={editor} />}
+      {!editor && (
         <styled.div h="100%">
           <p>Loading...</p>
         </styled.div>
@@ -288,6 +303,87 @@ export function Editor({ post, onChange, isEditable = true }: Props) {
             url && editor?.chain().focus().setLink({ href: url }).run();
           }}
           isPressed={editor?.isActive("link")}
+        />
+
+        <StyleButton
+          icon={<Image size={iconSize} />}
+          onClick={async () => {
+            if (imageRef.current) {
+              imageRef.current.click();
+            }
+          }}
+          isPressed={editor?.isActive("image")}
+        />
+
+        <styled.input
+          type="file"
+          ref={imageRef}
+          onChange={async () => {
+            const file = imageRef.current?.files?.item(0);
+            if (!file) {
+              return;
+            }
+
+            let mimeType = file.type;
+            let converted: Blob = file;
+            if (
+              typeof window !== "undefined" &&
+              (file.type === "image/heic" || file.type === "image/heif")
+            ) {
+              try {
+                const heic2any = require("heic2any");
+                const jpeg = await heic2any({
+                  blob: file,
+                  toType: "image/jpeg",
+                  quality: 1,
+                });
+
+                if (!Array.isArray(jpeg)) {
+                  converted = jpeg;
+                  mimeType = "image/jpeg";
+                }
+              } catch (e) {
+                console.error(e);
+              }
+            }
+
+            const name = createId();
+            try {
+              const body = new Uint8Array(await converted.arrayBuffer());
+              const result = await uploadFileOnPost(
+                postId,
+                name,
+                body,
+                mimeType,
+                1400
+              );
+
+              if (result.fileOnPost) {
+                editor
+                  ?.chain()
+                  .focus()
+                  .setImage({
+                    src: getUrl(result.fileOnPost.file, "webp@1400"),
+                  })
+                  .run();
+              } else {
+                toast({
+                  title: "Error",
+                  description: "画像をアップロードできませんでした。",
+                });
+              }
+
+              if (imageRef.current) {
+                imageRef.current.value = "";
+              }
+            } catch (_e) {
+              toast({
+                title: "Error",
+                description: "画像をアップロードできませんでした。",
+              });
+            }
+          }}
+          display="none"
         />
 
         <StyleButton

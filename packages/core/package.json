@@ -15,10 +15,10 @@
         "default": "./index.ts"
       }
     },
-    "./profile": {
+    "./user": {
       "import": {
-        "types": "./profile.ts",
-        "default": "./profile.ts"
+        "types": "./user.ts",
+        "default": "./user.ts"
       }
     },
     "./post": {
@@ -26,7 +26,16 @@
         "types": "./post.ts",
         "default": "./post.ts"
       }
+    },
+    "./file": {
+      "import": {
+        "types": "./file.ts",
+        "default": "./file.ts"
+      }
     }
+  },
+  "dependencies": {
+    "db": "workspace:*"
   },
   "keywords": [],
   "author": "",

@@ -36,10 +36,11 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
 
-  accounts Account[]
-  profile  Profile?
-  tags     Tag[]
-  posts    Post[]
+  accounts        Account[]
+  profile         Profile?
+  tags            Tag[]
+  posts           Post[]
+  accessiblePosts AccessibleUserOnPost[]
 }
 
 model VerificationToken {
@@ -61,52 +62,75 @@ model Profile {
 }
 
 model Post {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  body      String
-  isPublic  Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  postTags  PostTag[]
+  id              String                 @id @default(cuid())
+  userId          String
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body            String
+  isPublic        Boolean                @default(false)
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  deletedAt       DateTime?
+  tags            TagOnPost[]
+  accessibleUsers AccessibleUserOnPost[]
+  files           FileOnPost[]
 }
 
 model Tag {
-  id       String    @id @default(cuid())
-  userId   String
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name     String
-  postTags PostTag[]
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  taggedPosts TagOnPost[]
 
   @@unique([userId, name])
 }
 
-model PostTag {
+model TagOnPost {
   postId String
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   tagId  String
-  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Restrict)
 
   @@id([postId, tagId])
 }
 
+model AccessibleUserOnPost {
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level  String @default("read")
+
+  @@id([postId, userId])
+}
+
 model File {
-  id       String    @id @default(cuid())
-  key      String    @unique
-  url      String
-  mimeType String
-  assets   Asset[]
-  profiles Profile[]
+  id           String       @id @default(cuid())
+  key          String       @unique
+  url          String
+  mimeType     String
+  assets       Asset[]
+  profiles     Profile[]
+  relatedPosts FileOnPost[]
 }
 
 model Asset {
-  id     String @id @default(cuid())
-  fileId String
-  file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  key    String @unique
-  url    String
-  label  String
+  id       String @id @default(cuid())
+  fileId   String
+  file     File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  key      String @unique
+  url      String
+  mimeType String
+  label    String
 
   @@unique([fileId, label])
+}
+
+model FileOnPost {
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  fileId String
+  file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@id([postId, fileId])
 }

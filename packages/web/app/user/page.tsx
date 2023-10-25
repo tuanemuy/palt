@@ -1,18 +1,15 @@
 import { authOrRedirect } from "@/lib/next-auth";
-import { getUser, getTags } from "./_action";
+import { getUser } from "./_action";
 
 import { View } from "./View";
 
 export default async function Page() {
   const { id } = await authOrRedirect();
 
-  const [{ tags }, { user }] = await Promise.all([
-    getTags({ userId: id }),
-    getUser({ id }),
-  ]);
+  const { user } = await getUser({ id });
 
   if (user) {
-    return <View user={user} tags={tags || []} />;
+    return <View user={user} />;
   } else {
     throw new Error("User not found");
   }

@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { OrderBy } from "core/profile";
+import { OrderBy } from "core/user";
+import { AccessLevel } from "core/post";
 
 export const getUserSchema = z.object({
   id: z.string().cuid(),
@@ -10,15 +11,11 @@ export const editUserSchema = z.object({
   name: z
     .string()
     .regex(/^[A-Za-z][a-zA-Z0-9]*/)
-    .max(30),
-  introduction: z.string().max(300).nullable(),
-  thumbnail: z
-    .object({
-      key: z.string().min(1),
-      mimeType: z.string().min(1),
-    })
-    .nullable(),
-  orderBy: z.enum([OrderBy.CREATED, OrderBy.UPDATED]),
+    .max(30)
+    .optional(),
+  introduction: z.string().max(300).nullish(),
+  orderBy: z.enum([OrderBy.CREATED, OrderBy.UPDATED]).optional(),
+  thumbnailId: z.string().cuid().nullish(),
 });
 
 export const removeUserSchema = z.object({
@@ -44,24 +41,47 @@ export const addPostSchema = z.object({
 
 export const editPostSchema = z.object({
   id: z.string().cuid(),
-  // userId: z.string().cuid(),
-  body: z.string(),
-  // tags: z.array(z.string().min(1)),
-  isPublic: z.boolean(),
+  body: z.string().optional(),
+  isPublic: z.boolean().optional(),
 });
 
-export const publishPostSchema = z.object({
-  id: z.string().cuid(),
-  isPublic: z.boolean(),
+export const cleanFilesOnPostSchema = z.object({
+  postId: z.string().cuid(),
+});
+
+export const addAccessibleUserSchema = z.object({
+  postId: z.string().cuid(),
+  ownerId: z.string().cuid(),
+  targetEmailOrName: z.string().min(1),
+  level: z.enum([AccessLevel.READ, AccessLevel.EDIT]),
+});
+
+export const editAccessibleUserSchema = z.object({
+  postId: z.string().cuid(),
+  userId: z.string().cuid(),
+  level: z.enum([AccessLevel.READ, AccessLevel.EDIT]),
+});
+
+export const removeAccessibleUserSchema = z.object({
+  postId: z.string().cuid(),
+  userId: z.string().cuid(),
 });
 
 export const removePostSchema = z.object({ id: z.string().cuid() });
 
 export const getTagsSchema = z.object({ userId: z.string().cuid() });
 
+export const editPostTagsSchema = z.object({
+  id: z.string().cuid(),
+  userId: z.string().cuid(),
+  tags: z.array(z.string().min(1)),
+});
+
 export const ActionError = {
   DuplicateNameError: "duplicate-name",
+  NotFoundError: "not-found",
   DatabaseError: "database-error",
   S3Error: "s3-error",
+  ImageConvesionError: "image-conversion-error",
 } as const;
 export type ActionError = (typeof ActionError)[keyof typeof ActionError];

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Tag } from "db";
+import { Tag } from "core/post";
 import { styled } from "@/lib/style/system/jsx";
 import { useToast } from "@/components/ui/toast";
 import { addPost } from "./_action";
@@ -44,9 +44,9 @@ export function Footer({ userId, tags }: Props) {
           },
         }}
       >
-        {tags.map((t) => {
+        {tags.map((t, i) => {
           return (
-            <styled.p fontSize=".8rem" whiteSpace="nowrap">
+            <styled.p key={i} fontSize=".8rem" whiteSpace="nowrap">
               #{t.name}
             </styled.p>
           );
