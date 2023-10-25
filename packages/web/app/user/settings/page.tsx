@@ -4,7 +4,7 @@ import { getUser } from "../_action";
 import NextLink from "next/link";
 import { Container, styled } from "@/lib/style/system/jsx";
 import { Frame } from "@/components/frame";
-import { Form } from "./Form";
+import { Form } from "./_components/Form";
 import { ChevronLeft } from "lucide-react";
 
 export default async function Page() {

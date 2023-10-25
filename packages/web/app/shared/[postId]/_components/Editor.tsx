@@ -9,7 +9,7 @@ import Link from "@tiptap/extension-link";
 import TipTapImage from "@tiptap/extension-image";
 import { getUrl } from "core/file";
 import { useToast } from "@/components/ui/toast";
-import { uploadFileOnPost, cleanFilesOnPost } from "../_action";
+import { uploadFileOnPost, cleanFilesOnPost } from "../../_action";
 
 import { Flex, styled } from "@/lib/style/system/jsx";
 import { Toggle } from "@/components/ui/toggle";

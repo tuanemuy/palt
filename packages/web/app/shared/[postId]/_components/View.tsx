@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { FullPost, AccessLevel } from "core/post";
-import { getPost, editPost, editPostTags } from "../_action";
+import { getPost, editPost, editPostTags } from "../../_action";
 
 import { Container, Flex, styled } from "@/lib/style/system/jsx";
 import { Frame } from "@/components/frame";
-import { Article } from "@/components/article";
 import { PenSquare, BookOpen, LockKeyhole, UnlockKeyhole } from "lucide-react";
 import { Editor } from "./Editor";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { StoreProvider } from "./_store";
+import { StoreProvider } from "../_store";
 
 type Props = {
   children: React.ReactNode;

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { authOrRedirect } from "@/lib/next-auth";
 import { getPost } from "../_action";
 
-import { View } from "./View";
+import { View } from "./_components/View";
 
 type Props = {
   params: {

@@ -4,8 +4,8 @@ import { useContext, useState, useEffect } from "react";
 import { FullUser } from "core/user";
 import { Post, Tag } from "core/post";
 import { getUrl } from "core/file";
-import { getPosts, getTags } from "./_action";
-import { Store } from "./_store";
+import { getPosts, getTags } from "../_action";
+import { Store } from "../_store";
 
 import NextLink from "next/link";
 import InfiniteScroll from "react-infinite-scroll-component";
