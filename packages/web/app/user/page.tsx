@@ -1,7 +1,7 @@
 import { authOrRedirect } from "@/lib/next-auth";
 import { getUser } from "./_action";
 
-import { View } from "./View";
+import { View } from "./_components/View";
 
 export default async function Page() {
   const { id } = await authOrRedirect();

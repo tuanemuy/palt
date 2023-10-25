@@ -3,7 +3,7 @@ import "@/lib/style/font.css";
 import type { Metadata } from "next";
 
 import { Toaster } from "@/components/ui/toast";
-import { Providers } from "./Providers";
+import { Providers } from "./_components/Providers";
 
 export const metadata: Metadata = {
   title: "Palt",

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { FullUser } from "core/user";
 import { Post, Tag } from "core/post";
-import { getPosts, addPost, getTags } from "./_action";
-import { Store } from "./_store";
+import { getPosts, addPost, getTags } from "../_action";
+import { Store } from "../_store";
 
 import NextLink from "next/link";
 import InfiniteScroll from "react-infinite-scroll-component";

@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { getPost } from "../_action";
 
 import NextLink from "next/link";
@@ -15,10 +16,21 @@ type Props = {
 export async function generateMetadata({ params: { postId } }: Props) {
   const { post } = await getPost({ id: postId });
 
-  return {
-    title: `title | ${post?.user.name}`,
-    description: "Palt",
-  };
+  if (post) {
+    const h1 = post.body.match(/<h1[^>]*>(.+)<\/h1>/);
+    const title =
+      h1?.at(1) || `${format(post.createdAt, "yyyy/MM/dd HH:mm")}の投稿`;
+
+    return {
+      title: `${title} | ${post.user.name}`,
+      description: "Palt",
+    };
+  } else {
+    return {
+      title: "Palt",
+      description: "Palt",
+    };
+  }
 }
 
 export default async function Page({ params: { postId } }: Props) {

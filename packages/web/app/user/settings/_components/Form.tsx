@@ -7,8 +7,8 @@ import { SubmitHandler, useZodForm } from "util/form";
 import { FullUser, OrderBy, stringToOrderBy, orderByToString } from "core/user";
 import { FullFile, getUrl } from "core/file";
 import { useToast } from "@/components/ui/toast";
-import { editUser, uploadPublicFile, deleteFile } from "../_action";
-import { ActionError, editUserSchema } from "../_schema";
+import { editUser, uploadPublicFile, deleteFile } from "../../_action";
+import { ActionError, editUserSchema } from "../../_schema";
 
 import { cx, css } from "@/lib/style/system/css";
 import { icon } from "@/lib/style/system/recipes";

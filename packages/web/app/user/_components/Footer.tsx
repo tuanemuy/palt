@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Tag } from "core/post";
 import { styled } from "@/lib/style/system/jsx";
 import { useToast } from "@/components/ui/toast";
-import { addPost } from "./_action";
+import { addPost } from "../_action";
 
 import { Flex } from "@/lib/style/system/jsx";
 import { Plus } from "lucide-react";
