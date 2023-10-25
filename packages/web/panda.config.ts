@@ -89,6 +89,34 @@ export default defineConfig({
               _dark: "{colors.grayscale.950}",
             },
           },
+          info: {
+            DEFAULT: {
+              value: {
+                base: "{colors.lime.500}",
+                _dark: "{colors.lime.700}",
+              },
+            },
+            foreground: {
+              value: {
+                base: "{colors.grayscale.50}",
+                _dark: "{colors.lime.50}",
+              },
+            },
+          },
+          warning: {
+            DEFAULT: {
+              value: {
+                base: "{colors.amber.500}",
+                _dark: "{colors.amber.700}",
+              },
+            },
+            foreground: {
+              value: {
+                base: "{colors.grayscale.50}",
+                _dark: "{colors.amber.50}",
+              },
+            },
+          },
         },
       },
     },

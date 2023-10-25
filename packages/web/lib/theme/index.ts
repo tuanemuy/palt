@@ -20,7 +20,7 @@ export const Sizes = {
     DEFAULT: "64px",
     50: "32px",
     100: "64px",
-    150: "72px",
+    150: "96px",
     200: "128px",
     250: "160px",
     300: "192px",

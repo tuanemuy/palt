@@ -1628,7 +1628,7 @@ const tokens = {
     "variable": "var(--sizes-m-100)"
   },
   "sizes.m.150": {
-    "value": "72px",
+    "value": "96px",
     "variable": "var(--sizes-m-150)"
   },
   "sizes.m.200": {
@@ -1868,7 +1868,7 @@ const tokens = {
     "variable": "var(--spacing-m-100)"
   },
   "spacing.m.150": {
-    "value": "72px",
+    "value": "96px",
     "variable": "var(--spacing-m-150)"
   },
   "spacing.m.200": {
@@ -2034,6 +2034,22 @@ const tokens = {
   "colors.background": {
     "value": "var(--colors-background)",
     "variable": "var(--colors-background)"
+  },
+  "colors.info": {
+    "value": "var(--colors-info)",
+    "variable": "var(--colors-info)"
+  },
+  "colors.info.foreground": {
+    "value": "var(--colors-info-foreground)",
+    "variable": "var(--colors-info-foreground)"
+  },
+  "colors.warning": {
+    "value": "var(--colors-warning)",
+    "variable": "var(--colors-warning)"
+  },
+  "colors.warning.foreground": {
+    "value": "var(--colors-warning-foreground)",
+    "variable": "var(--colors-warning-foreground)"
   },
   "spacing.-1": {
     "value": "calc(var(--spacing-1) * -1)",

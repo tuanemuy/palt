@@ -1,50 +1,35 @@
 "use client";
 
 import { useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/toast";
 import { FullUser } from "core/user";
 import { Post, Tag } from "core/post";
-import { getPosts, addPost, getTags } from "./_action";
+import { getUrl } from "core/file";
+import { getPosts, getTags } from "./_action";
 import { Store } from "./_store";
 
 import NextLink from "next/link";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Container, Flex, styled } from "@/lib/style/system/jsx";
+import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
 import { Frame } from "@/components/frame";
 import { ListItem } from "@/components/post";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { Plus, Settings } from "lucide-react";
+import { LogIn, PenSquare } from "lucide-react";
 
 type Props = {
   user: FullUser;
+  isSignedIn: boolean;
 };
 
-export function View({ user }: Props) {
-  const router = useRouter();
-  const { toast } = useToast();
+export function View({ user, isSignedIn }: Props) {
   const { inputTags, inputText } = useContext(Store);
 
   const perPage = 30;
   const [posts, setPosts] = useState<Post[]>([]);
   const [count, setCount] = useState(0);
   const [tags, setTags] = useState<Tag[]>([]);
-
-  const newPost = async () => {
-    const result = await addPost({ userId: user.id });
-
-    if (result.post) {
-      router.push(`/user/${result.post.id}`);
-    } else {
-      toast({
-        title: "Error",
-        description: "もう一度お試しください。",
-      });
-    }
-  };
 
   const fetch = async (
     ti: { [key: string]: Tag | undefined },
@@ -108,9 +93,15 @@ export function View({ user }: Props) {
         />
       }
       trailing={
-        <NextLink href="/user/settings">
-          <Settings size={24} />
-        </NextLink>
+        isSignedIn ? (
+          <NextLink href="/user">
+            <PenSquare size="24" />
+          </NextLink>
+        ) : (
+          <NextLink href="/api/auth/signin">
+            <LogIn size="24" />
+          </NextLink>
+        )
       }
       drawer={
         <Flex direction="column" gap="s.200">
@@ -136,31 +127,27 @@ export function View({ user }: Props) {
         </Flex>
       }
       footer={
-        <Flex wrap="nowrap" gap="s.200" justify="space-between">
-          <Flex
-            gap="s.100"
-            wrap="nowrap"
-            shrink="1"
-            overflowX="scroll"
-            css={{
-              "&::-webkit-scrollbar": {
-                display: "none",
-              },
-            }}
-          >
-            {Object.keys(inputTags.value).map((key) => {
-              const t = inputTags.value[key];
-              if (t) {
-                return (
-                  <styled.p key={t.id} fontSize=".8rem" whiteSpace="nowrap">
-                    #{t.name}
-                  </styled.p>
-                );
-              }
-            })}
-          </Flex>
-
-          <Plus size={24} onClick={newPost} />
+        <Flex
+          gap="s.100"
+          wrap="nowrap"
+          shrink="1"
+          overflowX="scroll"
+          css={{
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
+          {Object.keys(inputTags.value).map((key) => {
+            const t = inputTags.value[key];
+            if (t) {
+              return (
+                <styled.p key={t.id} fontSize=".8rem" whiteSpace="nowrap">
+                  #{t.name}
+                </styled.p>
+              );
+            }
+          })}
         </Flex>
       }
     >
@@ -178,6 +165,37 @@ export function View({ user }: Props) {
             </styled.p>
           }
         >
+          <Flex my="m.50" gap="s.200" align="center">
+            <Box
+              flexShrink="0"
+              w="m.150"
+              h="m.150"
+              borderRadius="token(sizes.m.150)"
+              overflow="hidden"
+              mt="s.100"
+              bg="border"
+            >
+              {user.profile?.thumbnail && (
+                <styled.img
+                  src={getUrl(user.profile.thumbnail, "webp@640")}
+                  alt="thumbnail"
+                  w="100%"
+                  h="100%"
+                  objectFit="cover"
+                />
+              )}
+            </Box>
+
+            <Box flexShrink="1">
+              <styled.h1 fontWeight="bold" fontSize="1.1rem">
+                {user.name}
+              </styled.h1>
+              <styled.p mt="s.50" fontSize=".9rem">
+                {user.profile?.introduction || ""}
+              </styled.p>
+            </Box>
+          </Flex>
+
           {posts.map((p) => {
             return (
               <styled.div
@@ -188,7 +206,11 @@ export function View({ user }: Props) {
                   },
                 }}
               >
-                <ListItem post={p} isEditable={true} />
+                <ListItem
+                  post={p}
+                  isEditable={false}
+                  userName={user.name || undefined}
+                />
               </styled.div>
             );
           })}

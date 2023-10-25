@@ -2,12 +2,12 @@
 
 import { useRef, useState } from "react";
 import { z } from "zod";
-import mime from "mime";
 import { createId } from "@paralleldrive/cuid2";
 import { SubmitHandler, useZodForm } from "util/form";
-import { OrderBy, stringToOrderBy, orderByToString } from "core/profile";
+import { FullUser, OrderBy, stringToOrderBy, orderByToString } from "core/user";
+import { FullFile, getUrl } from "core/file";
 import { useToast } from "@/components/ui/toast";
-import { UserWithProfile, editUser } from "../_action";
+import { editUser, uploadPublicFile, deleteFile } from "../_action";
 import { ActionError, editUserSchema } from "../_schema";
 
 import { cx, css } from "@/lib/style/system/css";
@@ -29,10 +29,10 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2, X } from "lucide-react";
 
 type Props = {
-  user: UserWithProfile;
+  user: FullUser;
 };
 
-export function SettingsForm({ user }: Props) {
+export function Form({ user }: Props) {
   const { toast } = useToast();
   const thumbnailRef = useRef<HTMLInputElement>(null);
   const {
@@ -46,13 +46,12 @@ export function SettingsForm({ user }: Props) {
       id: user.id,
       name: user.name || undefined,
       introduction: user.profile?.introduction,
-      thumbnail: user.profile?.thumbnail || null,
       orderBy: stringToOrderBy(user.profile?.orderBy || "createdAt"),
     },
   });
 
-  const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(
-    user.profile?.thumbnail?.url || null
+  const [thumbnail, setThumbnail] = useState<FullFile | null>(
+    user.profile?.thumbnail || null
   );
 
   const onChangeThumbnail = async (
@@ -60,22 +59,87 @@ export function SettingsForm({ user }: Props) {
   ) => {
     const file = event.target.files?.item(0);
 
-    if (file) {
-      setValue("thumbnail", {
-        key: `${createId()}.${mime.getExtension(file.type)}`,
-        mimeType: file.type,
+    if (!file) {
+      if (thumbnailRef.current) {
+        thumbnailRef.current.value = "";
+      }
+      return;
+    }
+
+    if (thumbnail) {
+      deleteFile(thumbnail.key).catch((_e) =>
+        console.log("Failed to delete a file.")
+      );
+    }
+
+    let mimeType = file.type;
+    let converted: Blob = file;
+    if (
+      typeof window !== "undefined" &&
+      (file.type === "image/heic" || file.type === "image/heif")
+    ) {
+      try {
+        const heic2any = require("heic2any");
+        const jpeg = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 1,
+        });
+
+        if (!Array.isArray(jpeg)) {
+          converted = jpeg;
+          mimeType = "image/jpeg";
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const name = createId();
+    let uploaded;
+    try {
+      const body = new Uint8Array(await converted.arrayBuffer());
+      const result = await uploadPublicFile(name, body, mimeType, 640);
+
+      if (result.file) {
+        uploaded = result.file;
+      } else {
+        throw new Error("Failed to upload.");
+      }
+    } catch (_e) {
+      toast({
+        title: "Error",
+        description: "画像をアップロードできませんでした。",
       });
-      setThumbnailSrc((v) => {
-        v && URL.revokeObjectURL(v);
-        const url = URL.createObjectURL(file);
-        return url;
+      if (thumbnailRef.current) {
+        thumbnailRef.current.value = "";
+      }
+      return;
+    }
+
+    try {
+      const result = await editUser({
+        id: user.id,
+        thumbnailId: uploaded.id,
       });
-    } else {
-      setValue("thumbnail", null);
-      setThumbnailSrc((v) => {
-        v && URL.revokeObjectURL(v);
-        return null;
+
+      if (result.user) {
+        setThumbnail(result.user.profile?.thumbnail || null);
+      } else {
+        throw new Error("Failed to edit user.");
+      }
+    } catch (_e) {
+      deleteFile(uploaded.key).catch((_e) =>
+        console.error("Failed to delete a file.")
+      );
+      toast({
+        title: "Error",
+        description: "画像を設定できませんでした。",
       });
+    }
+
+    if (thumbnailRef.current) {
+      thumbnailRef.current.value = "";
     }
   };
 
@@ -106,46 +170,46 @@ export function SettingsForm({ user }: Props) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box>
         <Label htmlFor="thumbnail">プロフィール画像</Label>
-        <Flex gap="s.100" align="center">
-          <Input
+
+        {thumbnail && (
+          <Box
+            w="m.300"
+            h="m.300"
+            borderRadius="token(sizes.m.150)"
+            overflow="hidden"
+            mt="s.100"
+          >
+            <styled.img
+              src={getUrl(thumbnail, "webp@640")}
+              alt="thumbnail"
+              w="100%"
+              h="100%"
+              objectFit="cover"
+            />
+          </Box>
+        )}
+
+        <Flex gap="s.100" align="center" mt="s.100">
+          <styled.input
             id="thumbnail"
             type="file"
+            accept="image/*"
             ref={thumbnailRef}
             onChange={onChangeThumbnail}
-            mt="s.100"
+            display="none"
           />
           <Button
             type="button"
             variant="secondary"
             onClick={() => {
-              setValue("thumbnail", null);
-              setThumbnailSrc((v) => {
-                v && URL.revokeObjectURL(v);
-                return null;
-              });
+              if (thumbnailRef.current) {
+                thumbnailRef.current.click();
+              }
             }}
           >
-            <X size="24" />
+            画像をアップロード
           </Button>
         </Flex>
-
-        {thumbnailSrc && (
-          <styled.img
-            src={thumbnailSrc}
-            alt="thumbnail"
-            maxW="l.100"
-            h="auto"
-            mt="s.100"
-          />
-        )}
-
-        {errors.thumbnail && (
-          <Alert variant="destructive" mt="s.100">
-            <AlertCircle />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>正しく入力してください</AlertDescription>
-          </Alert>
-        )}
       </Box>
 
       <Box mt="s.200">

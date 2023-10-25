@@ -1,17 +1,25 @@
+"use client";
+
+import { memo } from "react";
 import { format } from "date-fns";
-import { Post } from "db";
+import { Post } from "core/post";
 
 import NextLink from "next/link";
-import { Article } from "@/components/article";
 import { Box, Flex, styled } from "@/lib/style/system/jsx";
-import { PenSquare, LockKeyhole, UnlockKeyhole } from "lucide-react";
+import { Article } from "@/components/article";
+import { PenSquare, BookOpen, LockKeyhole, UnlockKeyhole } from "lucide-react";
 
 type Props = {
   post: Post;
   isEditable?: boolean;
+  userName?: string;
 };
 
-export function ListItem({ post, isEditable }: Props) {
+export const ListItem = memo(function ListItem({
+  post,
+  isEditable,
+  userName,
+}: Props) {
   return (
     <Box py="m.50">
       <Box
@@ -42,16 +50,24 @@ export function ListItem({ post, isEditable }: Props) {
         </styled.p>
 
         {isEditable && (
-          <Flex align="center" gap="s.200">
-            {post.isPublic && <UnlockKeyhole size={16} />}
-            {!post.isPublic && <LockKeyhole size={16} />}
+          <Flex align="center" gap="s.150">
+            <styled.div color={post.isPublic ? "warning" : "border"}>
+              {post.isPublic && <UnlockKeyhole size={16} />}
+              {!post.isPublic && <LockKeyhole size={16} />}
+            </styled.div>
 
             <NextLink href={`/user/${post.id}`}>
               <PenSquare size={16} />
             </NextLink>
           </Flex>
         )}
+
+        {!isEditable && userName && (
+          <NextLink href={`/${userName}/${post.id}`}>
+            <BookOpen size={16} />
+          </NextLink>
+        )}
       </Flex>
     </Box>
   );
-}
+});

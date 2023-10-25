@@ -4,7 +4,7 @@ import { getUser } from "../_action";
 import NextLink from "next/link";
 import { Container, styled } from "@/lib/style/system/jsx";
 import { Frame } from "@/components/frame";
-import { SettingsForm } from "../_components";
+import { Form } from "./Form";
 import { ChevronLeft } from "lucide-react";
 
 export default async function Page() {
@@ -25,7 +25,7 @@ export default async function Page() {
       }
     >
       <Container py="m.50">
-        <SettingsForm user={user} />
+        <Form user={user} />
       </Container>
     </Frame>
   );

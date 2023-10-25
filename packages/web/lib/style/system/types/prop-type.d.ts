@@ -227,7 +227,7 @@ interface PropertyValueTypes {
 	spaceY: Tokens["spacing"];
 	spaceX: Tokens["spacing"];
 	textAlpha: CssProperties["color"];
-	colorPalette: "rose" | "pink" | "fuchsia" | "purple" | "violet" | "indigo" | "blue" | "sky" | "cyan" | "teal" | "emerald" | "green" | "lime" | "yellow" | "amber" | "orange" | "red" | "neutral" | "stone" | "zinc" | "gray" | "slate" | "grayscale" | "muted" | "card" | "popover" | "primary" | "secondary" | "accent" | "destructive";
+	colorPalette: "rose" | "pink" | "fuchsia" | "purple" | "violet" | "indigo" | "blue" | "sky" | "cyan" | "teal" | "emerald" | "green" | "lime" | "yellow" | "amber" | "orange" | "red" | "neutral" | "stone" | "zinc" | "gray" | "slate" | "grayscale" | "muted" | "card" | "popover" | "primary" | "secondary" | "accent" | "destructive" | "info" | "warning";
 	textStyle: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "8xl" | "9xl" | "h1" | "h2" | "h3" | "h4" | "p" | "lead" | "large" | "small";
 	layerStyle: string;
 }
