@@ -1,4 +1,4 @@
-import { View } from "./View";
+import { View } from "./_components/View";
 
 type Props = {
   params: {

@@ -204,7 +204,7 @@ export default defineConfig({
       "*": {
         fontFamily: "sans",
         letterSpacing: "0",
-        lineHeight: 1.75,
+        lineHeight: 2,
         fontFeatureSettings: '"pkna"',
       },
       fontSize: {

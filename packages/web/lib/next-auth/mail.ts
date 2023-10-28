@@ -13,7 +13,7 @@ export async function sendVerificationRequest({
   const result = await transport.sendMail({
     to: identifier,
     from: provider.from,
-    subject: `${host}へのログイン | Saji`,
+    subject: `${host}へのログイン | Palt`,
     text: text({ url, host }),
     html: html({ url, host }),
   });

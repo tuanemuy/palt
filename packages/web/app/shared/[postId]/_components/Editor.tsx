@@ -9,9 +9,10 @@ import Link from "@tiptap/extension-link";
 import TipTapImage from "@tiptap/extension-image";
 import { getUrl } from "core/file";
 import { useToast } from "@/components/ui/toast";
-import { uploadFileOnPost, cleanFilesOnPost } from "../../_action";
+import { uploadFileOnPost } from "../../_action";
 
 import { Flex, styled } from "@/lib/style/system/jsx";
+import { article } from "@/components/article";
 import { Toggle } from "@/components/ui/toggle";
 import {
   Popover,
@@ -36,6 +37,8 @@ import {
   Image,
   Indent,
   Outdent,
+  Redo2,
+  Undo2,
 } from "lucide-react";
 
 type Props = {
@@ -43,6 +46,7 @@ type Props = {
   initialContent: string;
   onChangeBody: (body: string) => void;
   onChangeTags: (tags: string[]) => void;
+  onDestroy: () => void;
   isEditable?: boolean;
 };
 
@@ -55,6 +59,7 @@ export function Editor({
   initialContent,
   onChangeBody,
   onChangeTags,
+  onDestroy,
   isEditable = true,
 }: Props) {
   const iconSize = 18;
@@ -72,9 +77,7 @@ export function Editor({
     onUpdate: ({ editor }) => {
       setBody(editor.getHTML());
     },
-    onDestroy: () => {
-      cleanFilesOnPost({ postId });
-    },
+    onDestroy,
   });
 
   useEffect(() => {
@@ -96,6 +99,7 @@ export function Editor({
     <Flex
       direction="column"
       h="100%"
+      className={article}
       css={{
         "& > div:first-child": {
           flexGrow: "1",
@@ -113,91 +117,6 @@ export function Editor({
           content: "attr(data-placeholder)",
           color: "muted.foreground",
         },
-        "& h1, & h2, & h3, & h4, & h5, & h6": {
-          mt: "2rem",
-          fontWeight: "bold",
-          lineHeight: "1.5",
-        },
-        "& p, & ul, & ol, & table, & img, & code, & blockquote, & dl, & iframe, & pre":
-          {
-            mt: "1rem",
-          },
-        "& h1": {
-          fontSize: "1.75rem",
-        },
-        "& h2": {
-          paddingBottom: "0.25rem",
-          borderBottom: "2px solid token(colors.border)",
-          fontSize: "1.5rem",
-        },
-        "& h3": {
-          fontSize: "1.5rem",
-        },
-        "& h4": {
-          fontSize: "1.25rem",
-        },
-        "& h5": {
-          fontSize: "1.1rem",
-        },
-        "& a": {
-          textDecoration: "underline",
-        },
-        "& em": {
-          fontStyle: "italic",
-        },
-        "& strong, & b": {
-          fontWeight: "bold",
-        },
-        "& hr": {
-          margin: "4rem 0",
-        },
-        "& div:has(table)": {
-          overflowX: "scroll",
-        },
-        "& table": {
-          minW: "100%",
-        },
-        "& th": {
-          textAlign: "center",
-        },
-        "& td:first-child": {
-          verticalAlign: "middle",
-        },
-        "& th, & td": {
-          whiteSpace: "nowrap",
-        },
-        "& ul": {
-          pl: "1.5rem",
-          listStyle: "disc",
-        },
-        "& ol": {
-          pl: "1.5rem",
-          listStyle: "decimal",
-        },
-        "& td ul, & li ul, & td ol, & li ol": {
-          mt: "0",
-        },
-        "& li": {
-          padding: "0.15rem 0",
-        },
-        "& pre": {
-          p: "s.100",
-          color: "secondary.foreground",
-          bg: "secondary",
-          borderRadius: "md",
-        },
-        "& code": {
-          fontFamily: "mono",
-        },
-        "& img": {
-          maxW: "100%",
-        },
-        "& *:first-child": {
-          mt: "0",
-        },
-        "& *:last-child": {
-          mb: "0",
-        },
       }}
     >
       {editor && <EditorContent editor={editor} />}
@@ -214,6 +133,20 @@ export function Editor({
         py="s.100"
         overflow="scroll"
       >
+        {editor?.can().chain().focus().undo().run() && (
+          <StyleButton
+            icon={<Undo2 size={iconSize} />}
+            onClick={() => editor?.chain().focus().undo().run()}
+          />
+        )}
+
+        {editor?.can().chain().focus().redo().run() && (
+          <StyleButton
+            icon={<Redo2 size={iconSize} />}
+            onClick={() => editor?.chain().focus().redo().run()}
+          />
+        )}
+
         <StyleButton
           icon={<Pilcrow size={iconSize} />}
           onClick={() => editor?.chain().focus().setNode("paragraph").run()}
@@ -368,6 +301,7 @@ export function Editor({
                   .focus()
                   .setImage({
                     src: getUrl(result.fileOnPost.file, "webp@1400"),
+                    alt: result.fileOnPost.fileId,
                   })
                   .run();
               } else {

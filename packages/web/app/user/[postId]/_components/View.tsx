@@ -18,7 +18,8 @@ import {
   addAccessibleUser,
   editAccessibleUser,
   removeAccessibleUser,
-} from "../_action";
+  cleanupPost,
+} from "../../_action";
 
 import NextLink from "next/link";
 import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
@@ -52,12 +53,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ChevronLeft,
   LockKeyhole,
   UnlockKeyhole,
+  Menu,
   Share,
   Plus,
   Trash2,
+  History,
 } from "lucide-react";
 import { Editor } from "./Editor";
 
@@ -105,7 +115,7 @@ export function View({ postId }: Props) {
 
   return (
     <Frame
-      title={<styled.p fontWeight="bold">Palt</styled.p>}
+      title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
       leading={
         <NextLink href="/user">
           <ChevronLeft size={24} />
@@ -128,92 +138,117 @@ export function View({ postId }: Props) {
             {isPublic ? <UnlockKeyhole size={20} /> : <LockKeyhole size={20} />}
           </styled.button>
 
-          <AlertDialog>
-            <AlertDialogTrigger>
-              <Trash2 size={20} />
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
-                <AlertDialogDescription>
-                  削除した投稿を元に戻すことはできません。
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                <AlertDialogAction asChild>
-                  <button
-                    onClick={async () => {
-                      removePost({ id: postId });
-                      router.push("/user");
-                    }}
-                  >
-                    削除
-                  </button>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Menu size={24} />
+            </DropdownMenuTrigger>
 
-          <Dialog>
-            <DialogTrigger>
-              <Share size={20} />
-            </DialogTrigger>
+            <DropdownMenuContent>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Share size={16} />
+                    共有
+                  </DropdownMenuItem>
+                </DialogTrigger>
 
-            <DialogContent w="l.200" maxW="94%">
-              <DialogHeader p="s.50" overflow="hidden" textAlign="left">
-                <DialogTitle>投稿を共有</DialogTitle>
+                <DialogContent w="l.200" maxW="94%">
+                  <DialogHeader p="s.50" overflow="hidden" textAlign="left">
+                    <DialogTitle>投稿を共有</DialogTitle>
 
-                <Flex gap="s.100" mt="s.200">
-                  <Input
-                    value={emailOrName}
-                    onChange={(e) => setEmailOrName(e.target.value || "")}
-                    placeholder="Emailまたはユーザー名を入力"
-                  />
-
-                  {post && (
-                    <Button>
-                      <Plus
-                        size={22}
-                        onClick={() => {
-                          if (emailOrName.length > 0) {
-                            share(post.userId, emailOrName);
-                          }
-                        }}
+                    <Flex gap="s.100" mt="s.200">
+                      <Input
+                        value={emailOrName}
+                        onChange={(e) => setEmailOrName(e.target.value || "")}
+                        placeholder="Emailまたはユーザー名を入力"
                       />
-                    </Button>
-                  )}
-                </Flex>
 
-                <Box mt="m.50">
-                  <styled.h3
-                    pb="s.50"
-                    borderBottom="1px solid token(colors.border)"
-                  >
-                    共有済み
-                  </styled.h3>
+                      {post && (
+                        <Button>
+                          <Plus
+                            size={22}
+                            onClick={() => {
+                              if (emailOrName.length > 0) {
+                                share(post.userId, emailOrName);
+                              }
+                            }}
+                          />
+                        </Button>
+                      )}
+                    </Flex>
 
-                  <styled.ul display="flex" direction="column" gap="s.100">
-                    {accessibleUsers?.map((au) => {
-                      return (
-                        <AccessibleUser
-                          key={au.user.id}
-                          postId={postId}
-                          accessibleUser={au}
-                          onRemove={(userId: string) => {
-                            setAccessibleUsers((prev) =>
-                              prev.filter((au) => au.userId !== userId)
-                            );
-                            setEmailOrName("");
-                          }}
-                        />
-                      );
-                    })}
-                  </styled.ul>
-                </Box>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
+                    <Box mt="m.50">
+                      <styled.h3
+                        pb="s.50"
+                        borderBottom="1px solid token(colors.border)"
+                      >
+                        共有済み
+                      </styled.h3>
+
+                      <styled.ul display="flex" direction="column" gap="s.100">
+                        {accessibleUsers?.map((au) => {
+                          return (
+                            <AccessibleUser
+                              key={au.user.id}
+                              postId={postId}
+                              accessibleUser={au}
+                              onRemove={(userId: string) => {
+                                setAccessibleUsers((prev) =>
+                                  prev.filter((au) => au.userId !== userId)
+                                );
+                                setEmailOrName("");
+                              }}
+                            />
+                          );
+                        })}
+                      </styled.ul>
+                    </Box>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
+
+              {post && (
+                <DropdownMenuItem asChild>
+                  <NextLink href={`/user/${post.id}/revision`}>
+                    <History size={16} />
+                    履歴
+                  </NextLink>
+                </DropdownMenuItem>
+              )}
+
+              <DropdownMenuSeparator />
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Trash2 size={16} />
+                    削除
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      削除した投稿を元に戻すことはできません。
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                      <button
+                        onClick={async () => {
+                          removePost({ id: postId });
+                          router.push("/user");
+                        }}
+                      >
+                        削除
+                      </button>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </Flex>
       }
     >
@@ -235,6 +270,7 @@ export function View({ postId }: Props) {
                 tags,
               });
             }}
+            onDestroy={() => cleanupPost({ postId })}
           />
         )}
       </Container>

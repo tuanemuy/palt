@@ -10,7 +10,7 @@ export const editPostSchema = z.object({
   isPublic: z.boolean().optional(),
 });
 
-export const cleanFilesOnPostSchema = z.object({
+export const cleanupPostSchema = z.object({
   postId: z.string().cuid(),
 });
 

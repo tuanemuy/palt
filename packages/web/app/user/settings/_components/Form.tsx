@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Loader2, X } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 type Props = {
   user: FullUser;
@@ -45,6 +45,7 @@ export function Form({ user }: Props) {
     defaultValues: {
       id: user.id,
       name: user.name || undefined,
+      displayName: user.profile?.displayName,
       introduction: user.profile?.introduction,
       orderBy: stringToOrderBy(user.profile?.orderBy || "createdAt"),
     },
@@ -220,6 +221,22 @@ export function Form({ user }: Props) {
         </styled.p>
 
         {errors.name && (
+          <Alert variant="destructive" mt="s.100">
+            <AlertCircle />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>正しく入力してください</AlertDescription>
+          </Alert>
+        )}
+      </Box>
+
+      <Box mt="s.200">
+        <Label htmlFor="display-name">表示名</Label>
+        <Input id="display-name" {...register("displayName")} mt="s.100" />
+        <styled.p mt="s.100" fontSize=".8rem" color="muted.foreground">
+          30文字以内
+        </styled.p>
+
+        {errors.displayName && (
           <Alert variant="destructive" mt="s.100">
             <AlertCircle />
             <AlertTitle>Error</AlertTitle>

@@ -1,23 +1,10 @@
 "use server";
 
 import { z } from "zod";
-import sharp from "sharp";
-import mime from "mime";
-import {
-  S3Client,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 import { prisma } from "db";
-import { FullUser, User } from "core/user";
-import {
-  FullPost,
-  Post,
-  Tag,
-  FileOnPost,
-  AccessibleUserOnPost,
-} from "core/post";
-import { File } from "core/file";
+import { FullUser } from "core/user";
+import { FullPost, Post, Tag } from "core/post";
 import {
   ActionError,
   getUserByNameSchema,
@@ -25,14 +12,6 @@ import {
   getPostSchema,
   getTagsSchema,
 } from "./_schema";
-
-const s3 = new S3Client({
-  region: process.env.NEXT_PUBLIC_AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
-  },
-});
 
 export async function getUserByName(
   input: z.infer<typeof getUserByNameSchema>
@@ -124,7 +103,11 @@ export async function getPost(input: z.infer<typeof getPostSchema>) {
         isPublic: true,
       },
       include: {
-        user: true,
+        user: {
+          include: {
+            profile: true,
+          },
+        },
         tags: {
           include: {
             tag: true,
@@ -135,6 +118,7 @@ export async function getPost(input: z.infer<typeof getPostSchema>) {
             user: true,
           },
         },
+        revisions: true,
       },
     });
     return { post, error: null };
@@ -149,6 +133,7 @@ export async function getTags(input: z.infer<typeof getTagsSchema>) {
     const tags: Tag[] = await prisma.tag.findMany({
       where: {
         userId: input.userId,
+        isPublic: true,
       },
     });
 

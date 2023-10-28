@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { FullPost, AccessLevel } from "core/post";
-import { getPost, editPost, editPostTags } from "../../_action";
+import { getPost, editPost, editPostTags, cleanupPost } from "../../_action";
 
 import { Container, Flex, styled } from "@/lib/style/system/jsx";
 import { Frame } from "@/components/frame";
@@ -35,7 +35,7 @@ export function View({ userId, postId }: Props) {
 
   return (
     <Frame
-      title={<styled.p fontWeight="bold">Palt</styled.p>}
+      title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
       trailing={
         <Flex gap="s.200">
           {post?.isPublic ? (
@@ -80,6 +80,7 @@ export function View({ userId, postId }: Props) {
                 tags,
               });
             }}
+            onDestroy={() => cleanupPost({ postId })}
           />
         )}
       </Container>

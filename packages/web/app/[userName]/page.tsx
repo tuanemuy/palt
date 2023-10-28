@@ -9,6 +9,18 @@ type Props = {
   };
 };
 
+export async function generateMetadata({ params: { userName } }: Props) {
+  const { user } = await getUserByName({ name: userName });
+
+  if (user) {
+    return {
+      title: `${user.profile?.displayName || user.name} | Palt`,
+      description: "Paltは、書くことに集中するための、非常にシンプルなメモアプリです。",
+    };
+  } else {
+  }
+}
+
 export default async function Page({ params: { userName } }: Props) {
   const session = await auth();
   const { user } = await getUserByName({ name: userName });
