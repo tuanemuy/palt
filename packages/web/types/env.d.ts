@@ -11,5 +11,8 @@ namespace NodeJS {
     NEXT_PUBLIC_AWS_S3_BUCKET: string;
     AWS_ACCESS_KEY: string;
     AWS_SECRET_KEY: string;
+    GOOGLE_CLIENT_ID: string;
+    GOOGLE_CLIENT_SECRET: string;
+    NEXT_PUBLIC_BASE_URL: string;
   }
 }

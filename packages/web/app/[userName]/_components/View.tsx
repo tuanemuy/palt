@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { LogIn, PenSquare } from "lucide-react";
+import { LogIn, UserCircle } from "lucide-react";
 
 type Props = {
   user: FullUser;
@@ -95,7 +95,7 @@ export function View({ user, isSignedIn }: Props) {
       trailing={
         isSignedIn ? (
           <NextLink href="/user">
-            <PenSquare size="24" />
+            <UserCircle size="24" />
           </NextLink>
         ) : (
           <NextLink href="/api/auth/signin">
@@ -104,7 +104,7 @@ export function View({ user, isSignedIn }: Props) {
         )
       }
       drawer={
-        <Flex direction="column" gap="s.200">
+        <Flex direction="column" gap="s.250">
           {tags?.map((t) => {
             return (
               <Flex key={t.id} align="center" gap="s.100">
@@ -120,7 +120,9 @@ export function View({ user, isSignedIn }: Props) {
                     fetch(newTagsInput, inputText.value, true);
                   }}
                 />
-                <Label htmlFor={t.id}>{t.name}</Label>
+                <Label htmlFor={t.id} minW="m.100">
+                  {t.name}
+                </Label>
               </Flex>
             );
           })}
@@ -151,70 +153,72 @@ export function View({ user, isSignedIn }: Props) {
         </Flex>
       }
     >
-      <Container id="scroll" h="100%" overflowY="scroll">
-        <InfiniteScroll
-          scrollableTarget="scroll"
-          dataLength={posts.length}
-          next={() => {
-            fetch(inputTags.value, inputText.value, false);
-          }}
-          hasMore={posts.length < count}
-          loader={
-            <styled.p mt="s.100" textAlign="center">
-              Loading...
-            </styled.p>
-          }
-        >
-          <Flex my="m.50" gap="s.200" align="center">
-            <Box
-              flexShrink="0"
-              w="m.150"
-              h="m.150"
-              borderRadius="token(sizes.m.150)"
-              overflow="hidden"
-              mt="s.100"
-              bg="border"
-            >
-              {user.profile?.thumbnail && (
-                <styled.img
-                  src={getUrl(user.profile.thumbnail, "webp@640")}
-                  alt="thumbnail"
-                  w="100%"
-                  h="100%"
-                  objectFit="cover"
-                />
-              )}
-            </Box>
-
-            <Box flexShrink="1">
-              <styled.h1 fontWeight="bold" fontSize="1.1rem">
-                {user.name}
-              </styled.h1>
-              <styled.p mt="s.50" fontSize=".9rem">
-                {user.profile?.introduction || ""}
+      <Container h="100%">
+        <Box id="scroll" w="100%" h="100%" overflowY="scroll">
+          <InfiniteScroll
+            scrollableTarget="scroll"
+            dataLength={posts.length}
+            next={() => {
+              fetch(inputTags.value, inputText.value, false);
+            }}
+            hasMore={posts.length < count}
+            loader={
+              <styled.p mt="s.100" textAlign="center">
+                Loading...
               </styled.p>
-            </Box>
-          </Flex>
-
-          {posts.map((p) => {
-            return (
-              <styled.div
-                key={p.id}
-                css={{
-                  "&:not(:first-child)": {
-                    borderTop: "1px solid token(colors.border)",
-                  },
-                }}
+            }
+          >
+            <Flex my="m.50" gap="s.200" align="center">
+              <Box
+                flexShrink="0"
+                w="m.150"
+                h="m.150"
+                borderRadius="token(sizes.m.150)"
+                overflow="hidden"
+                mt="s.100"
+                bg="border"
               >
-                <ListItem
-                  post={p}
-                  isEditable={false}
-                  userName={user.name || undefined}
-                />
-              </styled.div>
-            );
-          })}
-        </InfiniteScroll>
+                {user.profile?.thumbnail && (
+                  <styled.img
+                    src={getUrl(user.profile.thumbnail, "webp@640")}
+                    alt="thumbnail"
+                    w="100%"
+                    h="100%"
+                    objectFit="cover"
+                  />
+                )}
+              </Box>
+
+              <Box flexShrink="1">
+                <styled.h1 fontWeight="bold" fontSize="1.1rem">
+                  {user.profile?.displayName || user.name}
+                </styled.h1>
+                <styled.p mt="s.50" fontSize=".9rem">
+                  {user.profile?.introduction || ""}
+                </styled.p>
+              </Box>
+            </Flex>
+
+            {posts.map((p) => {
+              return (
+                <styled.div
+                  key={p.id}
+                  css={{
+                    "&:not(:first-child)": {
+                      borderTop: "1px solid token(colors.border)",
+                    },
+                  }}
+                >
+                  <ListItem
+                    post={p}
+                    isEditable={false}
+                    userName={user.name || undefined}
+                  />
+                </styled.div>
+              );
+            })}
+          </InfiniteScroll>
+        </Box>
       </Container>
     </Frame>
   );

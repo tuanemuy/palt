@@ -6,7 +6,7 @@ import { Post } from "core/post";
 
 import NextLink from "next/link";
 import { Box, Flex, styled } from "@/lib/style/system/jsx";
-import { Article } from "@/components/article";
+import { article } from "@/components/article";
 import { PenSquare, BookOpen, LockKeyhole, UnlockKeyhole } from "lucide-react";
 
 type Props = {
@@ -28,9 +28,10 @@ export const ListItem = memo(function ListItem({
         overflow="hidden"
       >
         <Box pb="s.200">
-          <Article>
-            <styled.div dangerouslySetInnerHTML={{ __html: post.body || "" }} />
-          </Article>
+          <article
+            className={article}
+            dangerouslySetInnerHTML={{ __html: post.body || "" }}
+          />
         </Box>
 
         <Box

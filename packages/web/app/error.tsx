@@ -2,8 +2,8 @@
 
 import NextLink from "next/link";
 import { Container, styled } from "@/lib/style/system/jsx";
+import { article } from "@/components/article";
 import { Frame } from "@/components/frame";
-import { Article } from "@/components/article";
 import { Button } from "@/components/ui/button";
 
 import { Settings } from "lucide-react";
@@ -23,10 +23,10 @@ export default function Error({ reset }: Props) {
       }
     >
       <Container>
-        <Article>
+        <article className={article}>
           <h1>Error</h1>
           <p>Something went wrong.</p>
-        </Article>
+        </article>
 
         <Button onClick={() => reset()} mt="m.50">
           再読み込み

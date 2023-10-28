@@ -11,8 +11,10 @@ export const editUserSchema = z.object({
   name: z
     .string()
     .regex(/^[A-Za-z][a-zA-Z0-9]*/)
+    .min(1)
     .max(30)
     .optional(),
+  displayName: z.string().max(30).nullish(),
   introduction: z.string().max(300).nullish(),
   orderBy: z.enum([OrderBy.CREATED, OrderBy.UPDATED]).optional(),
   thumbnailId: z.string().cuid().nullish(),
@@ -45,7 +47,17 @@ export const editPostSchema = z.object({
   isPublic: z.boolean().optional(),
 });
 
-export const cleanFilesOnPostSchema = z.object({
+export const removePostSchema = z.object({ id: z.string().cuid() });
+
+export const restoreRevisionSchema = z.object({
+  userId: z.string().cuid(),
+  postId: z.string().cuid(),
+  revisionId: z.string().cuid(),
+  postBody: z.string(),
+  revisionBody: z.string(),
+});
+
+export const cleanupPostSchema = z.object({
   postId: z.string().cuid(),
 });
 
@@ -67,14 +79,17 @@ export const removeAccessibleUserSchema = z.object({
   userId: z.string().cuid(),
 });
 
-export const removePostSchema = z.object({ id: z.string().cuid() });
-
 export const getTagsSchema = z.object({ userId: z.string().cuid() });
 
 export const editPostTagsSchema = z.object({
   id: z.string().cuid(),
   userId: z.string().cuid(),
   tags: z.array(z.string().min(1)),
+});
+
+export const editTagSchema = z.object({
+  id: z.string().cuid(),
+  isPublic: z.boolean().optional(),
 });
 
 export const ActionError = {

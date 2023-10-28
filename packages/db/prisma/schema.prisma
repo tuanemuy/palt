@@ -31,7 +31,6 @@ model Account {
 model User {
   id            String    @id @default(cuid())
   name          String?   @unique
-  displayName   String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
@@ -58,6 +57,7 @@ model Profile {
   user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   thumbnailId  String?
   thumbnail    File?   @relation(fields: [thumbnailId], references: [id], onDelete: Restrict)
+  displayName  String?
   introduction String?
   orderBy      String  @default("createdAt")
 }
@@ -74,6 +74,15 @@ model Post {
   tags            TagOnPost[]
   accessibleUsers AccessibleUserOnPost[]
   files           FileOnPost[]
+  revisions       Revision[]
+}
+
+model Revision {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
 }
 
 model Tag {
@@ -81,6 +90,7 @@ model Tag {
   userId      String
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String
+  isPublic    Boolean     @default(false)
   taggedPosts TagOnPost[]
 
   @@unique([userId, name])

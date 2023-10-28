@@ -3,10 +3,10 @@ import { auth } from "@/lib/next-auth";
 
 import NextLink from "next/link";
 import { Container, styled } from "@/lib/style/system/jsx";
+import { article } from "@/components/article";
 import { Frame } from "@/components/frame";
-import { Article } from "@/components/article";
 import { Button } from "@/components/ui/button";
-import { LogIn, PenSquare } from "lucide-react";
+import { LogIn, UserCircle } from "lucide-react";
 
 export default async function Page() {
   const session = await auth();
@@ -21,21 +21,21 @@ export default async function Page() {
 
   return (
     <Frame
-      title={<styled.p fontWeight="bold">Palt</styled.p>}
+      title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
       trailing={
         user ? (
           <NextLink href="/user">
-            <PenSquare size="24" />
+            <UserCircle size={24} />
           </NextLink>
         ) : (
           <NextLink href="/api/auth/signin">
-            <LogIn size="24" />
+            <LogIn size={24} />
           </NextLink>
         )
       }
     >
       <Container py="m.50">
-        <Article>
+        <article className={article}>
           <styled.h1 fontSize="2.25rem !important">
             些細なことも、
             <br />
@@ -59,14 +59,20 @@ export default async function Page() {
           <p>
             タグやキーワードで絞り込めば、それぞれの文書を開かなくても、すぐに見つかります。
           </p>
-          <img src="/images/feature_02.svg" alt="書くだけ" width="320px" />
+          <img
+            src="/images/feature_02.svg"
+            alt="すぐに見つかる"
+            width="320px"
+          />
 
           <h3>仲間と共有</h3>
-          <p>Sajiは、非常にシンプルなメモアプリです。</p>
-          <img src="/images/feature_03.svg" alt="書くだけ" width="320px" />
-        </Article>
+          <p>
+            メールアドレスやユーザー名を入力するだけで、文書をすぐに仲間と共有し、一緒に編集することができます。
+          </p>
+          <img src="/images/feature_03.svg" alt="仲間と共有" width="320px" />
+        </article>
 
-        <NextLink href="/api/auth/signin">
+        <NextLink href="/user">
           <Button w="100%" mt="m.100">
             今すぐ使ってみる
           </Button>

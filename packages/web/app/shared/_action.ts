@@ -9,13 +9,19 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { prisma } from "db";
-import { FullPost, Post, FileOnPost } from "core/post";
-import { File } from "core/file";
+import {
+  FullPost,
+  Post,
+  FileOnPost,
+  Revision,
+  searchUnusedFiles,
+} from "core/post";
+import { File, Asset } from "core/file";
 import {
   ActionError,
   getPostSchema,
   editPostSchema,
-  cleanFilesOnPostSchema,
+  cleanupPostSchema,
   editPostTagsSchema,
 } from "./_schema";
 
@@ -26,6 +32,9 @@ const s3 = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_KEY,
   },
 });
+
+const REVISION_INTERVAL = 60 * 60 * 1000;
+const MAX_REVISIONS = 3;
 
 export async function uploadFileOnPost(
   postId: string,
@@ -89,7 +98,7 @@ export async function uploadFileOnPost(
         file: {
           create: {
             key,
-            url: `/api/post/${postId}/file/${name}.{ext}`,
+            url: `/api/post/${postId}/file/${name}.${ext}`,
             mimeType,
             assets: {
               create: [
@@ -113,21 +122,33 @@ export async function uploadFileOnPost(
   }
 }
 
-export async function cleanFilesOnPost(
-  input: z.infer<typeof cleanFilesOnPostSchema>
-) {
-  let post: (Post & { files: (FileOnPost & { file: File })[] }) | null;
+export async function cleanupPost(input: z.infer<typeof cleanupPostSchema>) {
+  let post:
+    | (Post & {
+        files: (FileOnPost & { file: File & { assets: Asset[] } })[];
+        revisions: Revision[];
+      })
+    | null;
   try {
     post = await prisma.post.findUnique({
+      where: {
+        id: input.postId,
+      },
       include: {
         files: {
           include: {
-            file: true,
+            file: {
+              include: {
+                assets: true,
+              },
+            },
           },
         },
-      },
-      where: {
-        id: input.postId,
+        revisions: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
   } catch (e) {
@@ -139,35 +160,69 @@ export async function cleanFilesOnPost(
     return { error: ActionError.NotFoundError };
   }
 
-  const tasks = post.files.map((fp) => {
+  const latestTime = post.updatedAt.getTime();
+  const previousTime = post.revisions.at(0)?.createdAt.getTime() || 0;
+  const previousBody = post.revisions.at(0)?.body;
+  const oldestRevision = post.revisions.at(MAX_REVISIONS - 1);
+  let createRevision;
+  let deleteRevisions;
+  if (
+    latestTime - previousTime > REVISION_INTERVAL &&
+    post.body !== previousBody
+  ) {
+    createRevision = prisma.revision.create({
+      data: {
+        postId: post.id,
+        body: post.body,
+      },
+    });
+
+    if (oldestRevision) {
+      deleteRevisions = prisma.revision.deleteMany({
+        where: {
+          createdAt: {
+            lte: oldestRevision.createdAt,
+          },
+        },
+      });
+    }
+  }
+
+  const unusedFiles = searchUnusedFiles(post);
+
+  const tasks2 = unusedFiles.map((file) => {
     return (async () => {
-      if (post && post.body.indexOf(fp.file.url) === -1) {
-        try {
+      try {
+        const deletes = [
+          file.key,
+          ...file.assets.map((asset) => asset.key),
+        ].map((key) => {
           const command = new DeleteObjectCommand({
             Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET,
-            Key: fp.file.key,
+            Key: key,
           });
-          s3.send(command);
-        } catch (e) {
-          console.error(e);
-          // return { error: ActionError.S3Error };
-        }
+          return s3.send(command);
+        });
+        await Promise.all(deletes);
+      } catch (e) {
+        console.error(e);
+        // return { error: ActionError.S3Error };
+      }
 
-        try {
-          const deleted = await prisma.file.delete({
-            where: {
-              id: fp.file.id,
-            },
-          });
-        } catch (e) {
-          console.error(e);
-          return { error: ActionError.DatabaseError };
-        }
+      try {
+        await prisma.file.delete({
+          where: {
+            id: file.id,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+        return { error: ActionError.DatabaseError };
       }
     })();
   });
 
-  await Promise.all(tasks);
+  await Promise.all([createRevision, deleteRevisions, ...tasks2]);
 
   return { error: null };
 }
@@ -179,7 +234,11 @@ export async function getPost(input: z.infer<typeof getPostSchema>) {
         id: input.id,
       },
       include: {
-        user: true,
+        user: {
+          include: {
+            profile: true,
+          },
+        },
         tags: {
           include: {
             tag: true,
@@ -190,11 +249,12 @@ export async function getPost(input: z.infer<typeof getPostSchema>) {
             user: true,
           },
         },
+        revisions: true,
       },
     });
     return { post, error: null };
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return { post: null, error: ActionError.DatabaseError };
   }
 }
