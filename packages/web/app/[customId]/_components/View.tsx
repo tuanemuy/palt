@@ -191,7 +191,7 @@ export function View({ user, isSignedIn }: Props) {
 
               <Box flexShrink="1">
                 <styled.h1 fontWeight="bold" fontSize="1.1rem">
-                  {user.profile?.displayName || user.name}
+                  {user.profile?.displayName || user.customId}
                 </styled.h1>
                 <styled.p mt="s.50" fontSize=".9rem">
                   {user.profile?.introduction || ""}
@@ -212,7 +212,7 @@ export function View({ user, isSignedIn }: Props) {
                   <ListItem
                     post={p}
                     isEditable={false}
-                    userName={user.name || undefined}
+                    customId={user.customId || undefined}
                   />
                 </styled.div>
               );

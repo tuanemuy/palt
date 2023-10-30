@@ -317,7 +317,7 @@ function AccessibleUser({
         textOverflow="ellipsis"
         overflow="hidden"
       >
-        {accessibleUser.user.name || "..."}
+        {accessibleUser.user.customId || "..."}
         {accessibleUser.user.email && ` (${accessibleUser.user.email})`}
       </styled.p>
 

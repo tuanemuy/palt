@@ -18,7 +18,7 @@ export async function generateMetadata({ params: { postId } }: Props) {
 
   if (post) {
     const title = `${extractTitle(post)} | ${
-      post.user.profile?.displayName || post.user.name
+      post.user.profile?.displayName || post.user.customId
     }`;
     const description = extractDescription(post.body);
     return {
@@ -47,7 +47,7 @@ export default async function Page({ params: { postId } }: Props) {
       <Frame
         title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
         leading={
-          <NextLink href={`/${post.user.name}`}>
+          <NextLink href={`/${post.user.customId}`}>
             <ChevronLeft size={24} />
           </NextLink>
         }

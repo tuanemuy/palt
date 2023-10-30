@@ -70,7 +70,7 @@ export default async function Image({ params: { postId } }: Props) {
             lineHeight: "2",
           }}
         >
-          by {post ? post.user.profile?.displayName || post.user.name : ""}
+          by {post ? post.user.profile?.displayName || post.user.customId : ""}
         </p>
       </div>
     ),
