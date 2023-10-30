@@ -13,5 +13,4 @@ fi
 
 cd `dirname $0`
 /home/hikaru/.anyenv/envs/nodenv/shims/pnpm run server:stop
-/usr/bin/lsof -t -i:3000
 /home/hikaru/.anyenv/envs/nodenv/shims/pnpm run server:run
