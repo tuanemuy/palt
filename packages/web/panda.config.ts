@@ -215,6 +215,9 @@ export default defineConfig({
     td: {
       whiteSpace: "nowrap",
     },
+    "input, textarea": {
+      fontSize: "16px"
+    }
   }),
   staticCss: {
     recipes: {
