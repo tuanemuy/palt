@@ -94,7 +94,7 @@ export async function editUser(input: z.infer<typeof editUserSchema>) {
         id: input.id,
       },
       data: {
-        name: input.name,
+        customId: input.customId,
         profile: {
           upsert: {
             create: {

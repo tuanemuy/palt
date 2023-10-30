@@ -12,13 +12,13 @@ import { PenSquare, BookOpen, LockKeyhole, UnlockKeyhole } from "lucide-react";
 type Props = {
   post: Post;
   isEditable?: boolean;
-  userName?: string;
+  customId?: string;
 };
 
 export const ListItem = memo(function ListItem({
   post,
   isEditable,
-  userName,
+  customId,
 }: Props) {
   return (
     <Box py="m.50">
@@ -63,8 +63,8 @@ export const ListItem = memo(function ListItem({
           </Flex>
         )}
 
-        {!isEditable && userName && (
-          <NextLink href={`/${userName}/${post.id}`}>
+        {!isEditable && customId && (
+          <NextLink href={`/${customId}/${post.id}`}>
             <BookOpen size={16} />
           </NextLink>
         )}
