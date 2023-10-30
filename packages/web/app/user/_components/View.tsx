@@ -114,6 +114,7 @@ export function View({ user }: Props) {
       title={
         <Input
           w="m.300"
+          fontSize="16px"
           value={inputText.value}
           onChange={(e) => {
             inputText.setValue(e.target.value);

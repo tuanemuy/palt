@@ -97,6 +97,7 @@ export function Editor({
       h="100%"
       className={article}
       css={{
+        fontSize: "16px",
         "& > div:first-child": {
           flexGrow: "1",
           flexShrink: "1",
