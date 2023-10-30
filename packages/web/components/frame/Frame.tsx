@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@/lib/style/system/jsx";
 
 import { Container, Box, Flex } from "@/lib/style/system/jsx";
@@ -27,8 +27,26 @@ export function Frame({
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) {
+      document.documentElement.style.removeProperty("--visual-viewport-height");
+      return;
+    }
+
+    const f = () =>
+      document.documentElement.style.setProperty(
+        "--visual-viewport-height",
+        `${vv.height}px`
+      );
+
+    vv.addEventListener("resize", f);
+    f();
+    return () => vv.removeEventListener("resize", f);
+  }, []);
+
   return (
-    <Flex h="dvh">
+    <Flex h="var(--visual-viewport-height)">
       {drawer && (
         <Drawer isOpen={isOpen} onChangeOpen={setIsOpen}>
           {drawer}
