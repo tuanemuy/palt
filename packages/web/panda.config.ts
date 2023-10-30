@@ -216,7 +216,7 @@ export default defineConfig({
       whiteSpace: "nowrap",
     },
     "input, textarea": {
-      fontSize: "16px"
+      fontSize: "16px !important"
     }
   }),
   staticCss: {
