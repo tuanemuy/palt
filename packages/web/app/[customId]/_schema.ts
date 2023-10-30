@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const getUserByNameSchema = z.object({
-  name: z.string().min(1),
+export const getUserByCustomIdSchema = z.object({
+  customId: z.string().min(1),
 });
 
 export const getPostsSchema = z.object({

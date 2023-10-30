@@ -1,25 +1,24 @@
 "use server";
 
 import { z } from "zod";
-import { S3Client } from "@aws-sdk/client-s3";
 import { prisma } from "db";
 import { FullUser } from "core/user";
 import { FullPost, Post, Tag } from "core/post";
 import {
   ActionError,
-  getUserByNameSchema,
+  getUserByCustomIdSchema,
   getPostsSchema,
   getPostSchema,
   getTagsSchema,
 } from "./_schema";
 
-export async function getUserByName(
-  input: z.infer<typeof getUserByNameSchema>
+export async function getUserByCustomId(
+  input: z.infer<typeof getUserByCustomIdSchema>
 ) {
   try {
     const user: FullUser | null = await prisma.user.findUnique({
       where: {
-        name: input.name,
+        customId: input.customId,
       },
       include: {
         profile: {

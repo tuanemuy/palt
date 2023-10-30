@@ -44,7 +44,7 @@ export function Form({ user }: Props) {
     schema: editUserSchema,
     defaultValues: {
       id: user.id,
-      name: user.name || undefined,
+      customId: user.customId || undefined,
       displayName: user.profile?.displayName,
       introduction: user.profile?.introduction,
       orderBy: stringToOrderBy(user.profile?.orderBy || "createdAt"),
@@ -214,13 +214,13 @@ export function Form({ user }: Props) {
       </Box>
 
       <Box mt="s.200">
-        <Label htmlFor="name">ユーザー名</Label>
-        <Input id="name" {...register("name")} mt="s.100" />
+        <Label htmlFor="custom-id">ユーザーID</Label>
+        <Input id="custom-id" {...register("customId")} mt="s.100" />
         <styled.p mt="s.100" fontSize=".8rem" color="muted.foreground">
           30文字以内 ／ 半角英数字
         </styled.p>
 
-        {errors.name && (
+        {errors.customId && (
           <Alert variant="destructive" mt="s.100">
             <AlertCircle />
             <AlertTitle>Error</AlertTitle>

@@ -8,7 +8,7 @@ export const getUserSchema = z.object({
 
 export const editUserSchema = z.object({
   id: z.string().cuid().optional(),
-  name: z
+  customId: z
     .string()
     .regex(/^[A-Za-z][a-zA-Z0-9]*/)
     .min(1)
