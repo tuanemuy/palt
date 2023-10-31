@@ -473,7 +473,15 @@ export async function getPost(input: z.infer<typeof getPostSchema>) {
       include: {
         user: {
           include: {
-            profile: true,
+            profile: {
+              include: {
+                thumbnail: {
+                  include: {
+                    assets: true,
+                  },
+                },
+              },
+            },
           },
         },
         tags: {
