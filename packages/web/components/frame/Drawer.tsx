@@ -12,10 +12,12 @@ export function Drawer({ isOpen, onChangeOpen, children }: Props) {
   return (
     <>
       <Box
-        position={{ base: "absolute", md: "relative" }}
+        position="fixed"
+        top="0"
+        left="0"
         zIndex="3"
         flexShrink="0"
-        h="full"
+        h="100dvh"
         px={{
           base: "s.200",
           md: "s.300",
@@ -24,29 +26,26 @@ export function Drawer({ isOpen, onChangeOpen, children }: Props) {
           base: "s.300",
           md: "s.300",
         }}
+        overflowY="scroll"
         bg="background"
         transitionDuration="0.3s"
         css={{
           boxShadow: "0px 0px 8px rgba(0, 0, 0, .05)",
-          transform: {
-            base: isOpen ? "translateX(0)" : "translateX(-110%)",
-            md: "translateX(0)",
-          },
+          transform: isOpen ? "translateX(0)" : "translateX(-110%)",
         }}
       >
         {children}
       </Box>
 
       <Box
-        position="absolute"
+        position="fixed"
+        top="0"
+        left="0"
         zIndex="2"
-        w="full"
-        h="full"
+        w="100vw"
+        h="100dvh"
         css={{
-          transform: {
-            base: isOpen ? "translateX(0)" : "translateX(-100%)",
-            md: "translateX(-100%)",
-          },
+          transform: isOpen ? "translateX(0)" : "translateX(-100%)",
         }}
         onClick={() => {
           onChangeOpen && onChangeOpen(false);

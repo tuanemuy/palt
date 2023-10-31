@@ -7,10 +7,10 @@ export const article = css({
     lineHeight: "1.5",
   },
   "& p, & ul, & ol, & table, & img, & code, & blockquote, & dl, & iframe": {
-    mt: "1.5rem",
+    mt: "1.25rem",
   },
   "& p + p": {
-    mt: "1rem",
+    mt: ".75rem",
   },
   "& h1": {
     fontSize: "1.75em",
@@ -21,13 +21,13 @@ export const article = css({
     fontSize: "1.5em",
   },
   "& h3": {
-    fontSize: "1.5em",
-  },
-  "& h4": {
     fontSize: "1.25em",
   },
-  "& h5": {
+  "& h4": {
     fontSize: "1.1em",
+  },
+  "& h5": {
+    fontSize: "1em",
   },
   "& a": {
     textDecoration: "underline",
@@ -62,7 +62,7 @@ export const article = css({
     mt: "0",
   },
   "& li": {
-    padding: "0.25rem 0",
+    padding: "0.15rem 0",
   },
   "& code": {
     fontFamily: "mono",

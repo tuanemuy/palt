@@ -10,7 +10,7 @@ import { Store } from "../_store";
 
 import NextLink from "next/link";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
+import { Container, Flex, styled } from "@/lib/style/system/jsx";
 import { Frame } from "@/components/frame";
 import { ListItem } from "@/components/post";
 import { Label } from "@/components/ui/label";
@@ -176,7 +176,7 @@ export function View({ user }: Props) {
         </Flex>
       }
       footer={
-        <Flex wrap="nowrap" gap="s.200" justify="space-between">
+        <Flex wrap="nowrap" gap="s.200" justify="space-between" w="100%">
           <Flex
             gap="s.100"
             wrap="nowrap"
@@ -192,7 +192,7 @@ export function View({ user }: Props) {
               const t = inputTags.value[key];
               if (t) {
                 return (
-                  <styled.p key={t.id} fontSize=".8rem" whiteSpace="nowrap">
+                  <styled.p key={t.id} fontSize=".9rem" whiteSpace="nowrap">
                     #{t.name}
                   </styled.p>
                 );
@@ -204,48 +204,45 @@ export function View({ user }: Props) {
         </Flex>
       }
     >
-      <Container h="100%">
-        <Box id="scroll" w="100%" h="100%" overflowY="scroll">
-          <InfiniteScroll
-            scrollableTarget="scroll"
-            dataLength={posts.length}
-            next={() => {
-              fetch(inputTags.value, inputText.value, false);
-            }}
-            hasMore={posts.length < count}
-            loader={
-              <styled.p mt="s.100" textAlign="center">
-                Loading...
-              </styled.p>
-            }
-          >
-            {posts.length < 1 && (
-              <Button
-                onClick={newPost}
-                variant="outline"
-                mt="m.50"
-                w="100%"
-                mx="auto"
+      <Container>
+        <InfiniteScroll
+          dataLength={posts.length}
+          next={() => {
+            fetch(inputTags.value, inputText.value, false);
+          }}
+          hasMore={posts.length < count}
+          loader={
+            <styled.p mt="s.100" textAlign="center">
+              Loading...
+            </styled.p>
+          }
+        >
+          {posts.length < 1 && (
+            <Button
+              onClick={newPost}
+              variant="outline"
+              mt="m.50"
+              w="100%"
+              mx="auto"
+            >
+              投稿を作成する
+            </Button>
+          )}
+          {posts.map((p) => {
+            return (
+              <styled.div
+                key={p.id}
+                css={{
+                  "&:not(:first-child)": {
+                    borderTop: "1px solid token(colors.border)",
+                  },
+                }}
               >
-                投稿を作成する
-              </Button>
-            )}
-            {posts.map((p) => {
-              return (
-                <styled.div
-                  key={p.id}
-                  css={{
-                    "&:not(:first-child)": {
-                      borderTop: "1px solid token(colors.border)",
-                    },
-                  }}
-                >
-                  <ListItem post={p} isEditable={true} />
-                </styled.div>
-              );
-            })}
-          </InfiniteScroll>
-        </Box>
+                <ListItem post={p} isEditable={true} />
+              </styled.div>
+            );
+          })}
+        </InfiniteScroll>
       </Container>
     </Frame>
   );

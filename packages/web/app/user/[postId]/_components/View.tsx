@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import twitter from "twitter-text";
+import { useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
+import TipTapImage from "@tiptap/extension-image";
 import {
   FullPost,
   AccessibleUser,
@@ -14,6 +19,7 @@ import {
   getPost,
   editPost,
   editPostTags,
+  uploadFileOnPost,
   removePost,
   addAccessibleUser,
   editAccessibleUser,
@@ -69,23 +75,56 @@ import {
   Trash2,
   History,
 } from "lucide-react";
-import { Editor } from "./Editor";
+import { EditorContent, EditorBar } from "@/components/post";
 
 type Props = {
   postId: string;
 };
 
 export function View({ postId }: Props) {
+  const [post, setPost] = useState<FullPost | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const result = await getPost({ id: postId });
+      if (result.post) {
+        setPost(result.post);
+      }
+    })();
+  }, []);
+
+  if (post) return <InnerView post={post} />;
+}
+
+type InnerViewProps = {
+  post: FullPost;
+};
+
+export function InnerView({ post }: InnerViewProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [post, setPost] = useState<FullPost | null>(null);
-  const [accessibleUsers, setAccessibleUsers] = useState<AccessibleUser[]>([]);
-  const [isPublic, setIsPublic] = useState<boolean>(false);
+  const [body, setBody] = useState(post.body);
+  const [accessibleUsers, setAccessibleUsers] = useState<AccessibleUser[]>(
+    post.accessibleUsers
+  );
+  const [isPublic, setIsPublic] = useState<boolean>(post.isPublic);
   const [emailOrName, setEmailOrName] = useState("");
+
+  const editor = useEditor({
+    extensions: [StarterKit, Link, TipTapImage],
+    content: post.body,
+    autofocus: true,
+    editable: true,
+    injectCSS: false,
+    onUpdate: ({ editor }) => {
+      setBody(editor.getHTML());
+    },
+    onDestroy: () => cleanupPost({ postId: post.id }),
+  });
 
   const share = async (ownerId: string, targetEmailOrName: string) => {
     const { accessibleUser } = await addAccessibleUser({
-      postId,
+      postId: post.id,
       ownerId,
       targetEmailOrName,
       level: AccessLevel.READ,
@@ -103,15 +142,22 @@ export function View({ postId }: Props) {
   };
 
   useEffect(() => {
-    (async () => {
-      const result = await getPost({ id: postId });
-      if (result.post) {
-        setPost(result.post);
-        setAccessibleUsers(result.post.accessibleUsers);
-        setIsPublic(result.post.isPublic);
-      }
-    })();
-  }, []);
+    const id = setTimeout(() => {
+      editPost({
+        id: post.id,
+        body,
+      });
+      editPostTags({
+        id: post.id,
+        userId: post.userId,
+        tags: twitter.extractHashtags(body),
+      });
+    }, 1000);
+
+    return () => {
+      clearTimeout(id);
+    };
+  }, [body]);
 
   return (
     <Frame
@@ -190,7 +236,7 @@ export function View({ postId }: Props) {
                           return (
                             <AccessibleUser
                               key={au.user.id}
-                              postId={postId}
+                              postId={post.id}
                               accessibleUser={au}
                               onRemove={(userId: string) => {
                                 setAccessibleUsers((prev) =>
@@ -237,7 +283,7 @@ export function View({ postId }: Props) {
                     <AlertDialogAction asChild>
                       <button
                         onClick={async () => {
-                          removePost({ id: postId });
+                          removePost({ id: post.id });
                           router.push("/user");
                         }}
                       >
@@ -251,29 +297,35 @@ export function View({ postId }: Props) {
           </DropdownMenu>
         </Flex>
       }
-    >
-      <Container position="relative" h="100%">
-        {post && (
-          <Editor
-            postId={postId}
-            initialContent={post.body}
-            onChangeBody={(body) => {
-              editPost({
-                id: postId,
+      footer={
+        editor && (
+          <EditorBar
+            editor={editor}
+            uploadFile={async (
+              name: string,
+              body: Uint8Array,
+              mimeType: string,
+              maxWidth: number
+            ) => {
+              const { fileOnPost } = await uploadFileOnPost(
+                post.id,
+                name,
                 body,
-              });
+                mimeType,
+                maxWidth
+              );
+
+              if (fileOnPost) {
+                return fileOnPost.file;
+              } else {
+                throw new Error("Failed to upload a file.");
+              }
             }}
-            onChangeTags={(tags) => {
-              editPostTags({
-                id: postId,
-                userId: post.userId,
-                tags,
-              });
-            }}
-            onDestroy={() => cleanupPost({ postId })}
           />
-        )}
-      </Container>
+        )
+      }
+    >
+      <Container>{editor && <EditorContent editor={editor} />}</Container>
     </Frame>
   );
 }

@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import { authOrRedirect } from "@/lib/next-auth";
 import { getPost } from "../_action";
 
@@ -18,12 +18,15 @@ export default async function Page({ params: { postId } }: Props) {
     throw new Error("Not found");
   }
 
+  /*
   if (post.userId === user.id) {
     redirect(`/user/${postId}`);
   }
+  */
 
   const isAccessible =
-    post.accessibleUsers.filter((au) => au.userId === user.id).length > 0;
+    post.accessibleUsers.filter((au) => au.userId === user.id).length > 0 ||
+    post.userId === user.id;
 
   if (isAccessible) {
     return <View userId={user.id} postId={postId} />;

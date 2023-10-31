@@ -1,10 +1,13 @@
+import { format } from "date-fns";
 import { extractTitle, extractDescription } from "core/post";
+import { getUrl } from "core/file";
 import { getPost } from "../_action";
 
 import NextLink from "next/link";
-import { Container, Flex, styled } from "@/lib/style/system/jsx";
+import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
 import { Frame } from "@/components/frame";
 import { article } from "@/components/article";
+import { Separator } from "@/components/ui/separator";
 import { ChevronLeft, LockKeyhole, UnlockKeyhole } from "lucide-react";
 
 type Props = {
@@ -66,6 +69,48 @@ export default async function Page({ params: { postId } }: Props) {
             className={article}
             dangerouslySetInnerHTML={{ __html: post.body }}
           />
+
+          <Flex gap="s.100" mt="m.50">
+            <styled.p fontSize=".8rem">
+              作成： {format(post.createdAt, "yyyy/MM/dd HH:mm")}
+            </styled.p>
+
+            <styled.p fontSize=".8rem">
+              更新： {format(post.updatedAt, "yyyy/MM/dd HH:mm")}
+            </styled.p>
+          </Flex>
+
+          <Separator mt="s.100" />
+
+          <Flex mt="s.200" gap="s.200" align="center">
+            <Box
+              flexShrink="0"
+              w="m.150"
+              h="m.150"
+              borderRadius="token(sizes.m.150)"
+              overflow="hidden"
+              bg="border"
+            >
+              {post.user.profile?.thumbnail && (
+                <styled.img
+                  src={getUrl(post.user.profile.thumbnail, "webp@640")}
+                  alt="thumbnail"
+                  w="100%"
+                  h="100%"
+                  objectFit="cover"
+                />
+              )}
+            </Box>
+
+            <Box flexShrink="1">
+              <styled.h1 fontWeight="bold" fontSize="1.1rem" lineHeight="1.5">
+                {post.user.profile?.displayName || post.user.customId}
+              </styled.h1>
+              <styled.p mt="s.50" fontSize=".9rem" lineHeight="1.75">
+                {post.user.profile?.introduction || ""}
+              </styled.p>
+            </Box>
+          </Flex>
         </Container>
       </Frame>
     );
