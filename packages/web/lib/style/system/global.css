@@ -49,6 +49,10 @@
     white-space: nowrap
     }
 
+  input, textarea {
+    font-size: 16px !important
+    }
+
   html {
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
