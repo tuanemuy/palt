@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const formItemFn = /* @__PURE__ */ createRecipe('formItem', {}, [])
 
@@ -13,6 +13,9 @@ export const formItem = /* @__PURE__ */ Object.assign(formItemFn, {
   raw: (props) => props,
   variantKeys: formItemVariantKeys,
   variantMap: formItemVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, formItemVariantKeys)
   },

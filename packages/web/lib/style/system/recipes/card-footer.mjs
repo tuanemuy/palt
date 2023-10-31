@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const cardFooterFn = /* @__PURE__ */ createRecipe('cardFooter', {}, [])
 
@@ -13,6 +13,9 @@ export const cardFooter = /* @__PURE__ */ Object.assign(cardFooterFn, {
   raw: (props) => props,
   variantKeys: cardFooterVariantKeys,
   variantMap: cardFooterVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, cardFooterVariantKeys)
   },

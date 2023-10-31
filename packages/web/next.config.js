@@ -2,7 +2,9 @@
 const nextConfig = {
   experimental: {
     externalDir: true,
-    serverActions: true,
+    serverActions: {
+      bodySizeLimit: "20mb",
+    },
   },
 };
 

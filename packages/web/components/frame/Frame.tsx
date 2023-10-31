@@ -46,7 +46,13 @@ export function Frame({
   }, []);
 
   return (
-    <Flex h="var(--visual-viewport-height)">
+    <Flex
+      position="absolute"
+      top="0"
+      left="0"
+      w="100vw"
+      h="var(--visual-viewport-height)"
+    >
       {drawer && (
         <Drawer isOpen={isOpen} onChangeOpen={setIsOpen}>
           {drawer}

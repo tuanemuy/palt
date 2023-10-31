@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const leadFn = /* @__PURE__ */ createRecipe('lead', {}, [])
 
@@ -13,6 +13,9 @@ export const lead = /* @__PURE__ */ Object.assign(leadFn, {
   raw: (props) => props,
   variantKeys: leadVariantKeys,
   variantMap: leadVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, leadVariantKeys)
   },

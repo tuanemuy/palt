@@ -1,7 +1,6 @@
 /* eslint-disable */
 import type { ConditionalValue } from '../types/index';
-import type { Pretty } from '../types/helpers';
-import type { DistributiveOmit } from '../types/system-types';
+import type { DistributiveOmit, Pretty } from '../types/system-types';
 
 interface ToastViewportVariant {
   

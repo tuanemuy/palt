@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const cardHeaderFn = /* @__PURE__ */ createRecipe('cardHeader', {}, [])
 
@@ -13,6 +13,9 @@ export const cardHeader = /* @__PURE__ */ Object.assign(cardHeaderFn, {
   raw: (props) => props,
   variantKeys: cardHeaderVariantKeys,
   variantMap: cardHeaderVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, cardHeaderVariantKeys)
   },

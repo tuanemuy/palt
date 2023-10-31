@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const toggleFn = /* @__PURE__ */ createRecipe('toggle', {
   "variant": "default",
@@ -26,6 +26,9 @@ export const toggle = /* @__PURE__ */ Object.assign(toggleFn, {
   raw: (props) => props,
   variantKeys: toggleVariantKeys,
   variantMap: toggleVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, toggleVariantKeys)
   },

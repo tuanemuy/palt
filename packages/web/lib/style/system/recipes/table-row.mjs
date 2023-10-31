@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const tableRowFn = /* @__PURE__ */ createRecipe('tableRow', {}, [])
 
@@ -13,6 +13,9 @@ export const tableRow = /* @__PURE__ */ Object.assign(tableRowFn, {
   raw: (props) => props,
   variantKeys: tableRowVariantKeys,
   variantMap: tableRowVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, tableRowVariantKeys)
   },

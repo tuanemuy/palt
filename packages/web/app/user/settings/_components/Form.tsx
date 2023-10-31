@@ -91,8 +91,8 @@ export function Form({ user }: Props) {
           converted = jpeg;
           mimeType = "image/jpeg";
         }
-      } catch (e) {
-        console.error(e);
+      } catch (_e) {
+        console.error("Failed to convert an image.");
       }
     }
 
@@ -129,6 +129,11 @@ export function Form({ user }: Props) {
       } else {
         throw new Error("Failed to edit user.");
       }
+
+      toast({
+        title: "Success",
+        description: "画像を設定しました。",
+      });
     } catch (_e) {
       deleteFile(uploaded.key).catch((_e) =>
         console.error("Failed to delete a file.")

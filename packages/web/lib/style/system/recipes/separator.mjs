@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const separatorFn = /* @__PURE__ */ createRecipe('separator', {
   "orientation": "horizontal"
@@ -20,6 +20,9 @@ export const separator = /* @__PURE__ */ Object.assign(separatorFn, {
   raw: (props) => props,
   variantKeys: separatorVariantKeys,
   variantMap: separatorVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, separatorVariantKeys)
   },

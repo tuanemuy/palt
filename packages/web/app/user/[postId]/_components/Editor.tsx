@@ -95,6 +95,7 @@ export function Editor({
     <Flex
       direction="column"
       h="100%"
+      overflow="hidden"
       className={article}
       css={{
         fontSize: "16px",
@@ -103,9 +104,6 @@ export function Editor({
           flexShrink: "1",
           h: "100%",
           overflow: "scroll",
-        },
-        "& .tiptap": {
-          h: "100%",
         },
         "& *:focus-visible": {
           outline: "none",

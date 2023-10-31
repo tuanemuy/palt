@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const alertFn = /* @__PURE__ */ createRecipe('alert', {
   "variant": "default"
@@ -20,6 +20,9 @@ export const alert = /* @__PURE__ */ Object.assign(alertFn, {
   raw: (props) => props,
   variantKeys: alertVariantKeys,
   variantMap: alertVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, alertVariantKeys)
   },

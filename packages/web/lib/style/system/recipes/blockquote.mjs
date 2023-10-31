@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const blockquoteFn = /* @__PURE__ */ createRecipe('blockquote', {}, [])
 
@@ -13,6 +13,9 @@ export const blockquote = /* @__PURE__ */ Object.assign(blockquoteFn, {
   raw: (props) => props,
   variantKeys: blockquoteVariantKeys,
   variantMap: blockquoteVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, blockquoteVariantKeys)
   },

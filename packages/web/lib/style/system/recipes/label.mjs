@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const labelFn = /* @__PURE__ */ createRecipe('label', {}, [])
 
@@ -13,6 +13,9 @@ export const label = /* @__PURE__ */ Object.assign(labelFn, {
   raw: (props) => props,
   variantKeys: labelVariantKeys,
   variantMap: labelVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, labelVariantKeys)
   },

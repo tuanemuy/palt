@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const h2Fn = /* @__PURE__ */ createRecipe('h2', {}, [])
 
@@ -13,6 +13,9 @@ export const h2 = /* @__PURE__ */ Object.assign(h2Fn, {
   raw: (props) => props,
   variantKeys: h2VariantKeys,
   variantMap: h2VariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, h2VariantKeys)
   },
