@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const buttonFn = /* @__PURE__ */ createRecipe('button', {
   "variant": "default",
@@ -31,6 +31,9 @@ export const button = /* @__PURE__ */ Object.assign(buttonFn, {
   raw: (props) => props,
   variantKeys: buttonVariantKeys,
   variantMap: buttonVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, buttonVariantKeys)
   },

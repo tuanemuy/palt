@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const linkFn = /* @__PURE__ */ createRecipe('link', {}, [])
 
@@ -13,6 +13,9 @@ export const link = /* @__PURE__ */ Object.assign(linkFn, {
   raw: (props) => props,
   variantKeys: linkVariantKeys,
   variantMap: linkVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, linkVariantKeys)
   },

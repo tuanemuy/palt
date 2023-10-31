@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const mutedFn = /* @__PURE__ */ createRecipe('muted', {}, [])
 
@@ -13,6 +13,9 @@ export const muted = /* @__PURE__ */ Object.assign(mutedFn, {
   raw: (props) => props,
   variantKeys: mutedVariantKeys,
   variantMap: mutedVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, mutedVariantKeys)
   },

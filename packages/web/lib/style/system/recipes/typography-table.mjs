@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const typographyTableFn = /* @__PURE__ */ createRecipe('typographyTable', {}, [])
 
@@ -13,6 +13,9 @@ export const typographyTable = /* @__PURE__ */ Object.assign(typographyTableFn, 
   raw: (props) => props,
   variantKeys: typographyTableVariantKeys,
   variantMap: typographyTableVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, typographyTableVariantKeys)
   },

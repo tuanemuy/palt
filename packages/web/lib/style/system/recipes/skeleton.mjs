@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const skeletonFn = /* @__PURE__ */ createRecipe('skeleton', {}, [])
 
@@ -13,6 +13,9 @@ export const skeleton = /* @__PURE__ */ Object.assign(skeletonFn, {
   raw: (props) => props,
   variantKeys: skeletonVariantKeys,
   variantMap: skeletonVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, skeletonVariantKeys)
   },

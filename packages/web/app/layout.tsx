@@ -15,6 +15,7 @@ export const metadata: Metadata = {
       "Paltは、書くことに集中するための、非常にシンプルなメモアプリです。",
   },
   manifest: "/manifest.json",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL),
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

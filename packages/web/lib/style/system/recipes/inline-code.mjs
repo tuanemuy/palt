@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const inlineCodeFn = /* @__PURE__ */ createRecipe('inlineCode', {}, [])
 
@@ -13,6 +13,9 @@ export const inlineCode = /* @__PURE__ */ Object.assign(inlineCodeFn, {
   raw: (props) => props,
   variantKeys: inlineCodeVariantKeys,
   variantMap: inlineCodeVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, inlineCodeVariantKeys)
   },

@@ -1,4 +1,4 @@
-import { ImageResponse } from "next/server";
+import { ImageResponse } from "next/og";
 import { extractTitle } from "core/post";
 import { FontFamilies } from "@/lib/theme";
 import { getPost } from "../_action";

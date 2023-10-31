@@ -1,5 +1,5 @@
 import { splitProps } from '../helpers.mjs';
-import { createRecipe } from './create-recipe.mjs';
+import { createRecipe, mergeRecipes } from './create-recipe.mjs';
 
 const badgeFn = /* @__PURE__ */ createRecipe('badge', {
   "variant": "default"
@@ -22,6 +22,9 @@ export const badge = /* @__PURE__ */ Object.assign(badgeFn, {
   raw: (props) => props,
   variantKeys: badgeVariantKeys,
   variantMap: badgeVariantMap,
+  merge(recipe) {
+    return mergeRecipes(this, recipe)
+  },
   splitVariantProps(props) {
     return splitProps(props, badgeVariantKeys)
   },

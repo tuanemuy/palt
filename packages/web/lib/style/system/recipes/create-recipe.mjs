@@ -1,7 +1,7 @@
 import { css } from '../css/css.mjs';
 import { assertCompoundVariant, getCompoundVariantCss } from '../css/cva.mjs';
 import { cx } from '../css/cx.mjs';
-import { compact, createCss, withoutSpace } from '../helpers.mjs';
+import { compact, createCss, splitProps, uniq, withoutSpace } from '../helpers.mjs';
 
 export const createRecipe = (name, defaultVariants, compoundVariants) => {
  const getRecipeStyles = (variants) => {
@@ -48,3 +48,26 @@ export const createRecipe = (name, defaultVariants, compoundVariants) => {
      },
    })
 }
+
+export const mergeRecipes = (recipeA, recipeB) => {
+ if (recipeA && !recipeB) return recipeA
+ if (!recipeA && recipeB) return recipeB
+
+ const recipeFn = (...args) => cx(recipeA(...args), recipeB(...args))
+ const variantKeys = uniq(recipeA.variantKeys, recipeB.variantKeys)
+ const variantMap = variantKeys.reduce((acc, key) => {
+   acc[key] = uniq(recipeA.variantMap[key], recipeB.variantMap[key])
+   return acc
+ }, {})
+
+ return Object.assign(recipeFn, {
+   __recipe__: true,
+   __name__: `${recipeA.__name__} ${recipeB.__name__}`,
+   raw: (props) => props,
+   variantKeys,
+   variantMap,
+   splitVariantProps(props) {
+     return splitProps(props, variantKeys)
+   },
+ })
+ }
