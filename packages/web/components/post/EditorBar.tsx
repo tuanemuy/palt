@@ -1,18 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useRef } from "react";
+import { Editor } from "@tiptap/react";
 import twitter from "twitter-text";
 import { createId } from "@paralleldrive/cuid2";
-import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
-import TipTapImage from "@tiptap/extension-image";
-import { getUrl } from "core/file";
+import { FullFile, getUrl } from "core/file";
 import { useToast } from "@/components/ui/toast";
-import { uploadFileOnPost } from "../../_action";
 
 import { Flex, styled } from "@/lib/style/system/jsx";
-import { article } from "@/components/article";
 import { Toggle } from "@/components/ui/toggle";
 import {
   Popover,
@@ -42,85 +37,22 @@ import {
 } from "lucide-react";
 
 type Props = {
-  postId: string;
-  initialContent: string;
-  onChangeBody: (body: string) => void;
-  onChangeTags: (tags: string[]) => void;
-  onDestroy: () => void;
-  isEditable?: boolean;
+  editor: Editor;
+  uploadFile: (
+    name: string,
+    body: Uint8Array,
+    mimeType: string,
+    maxWidth: number
+  ) => Promise<FullFile>;
 };
 
-function extractTags(body: string): string[] {
-  return twitter.extractHashtags(body);
-}
-
-export function Editor({
-  postId,
-  initialContent,
-  onChangeBody,
-  onChangeTags,
-  onDestroy,
-  isEditable = true,
-}: Props) {
+export function EditorBar({ editor, uploadFile }: Props) {
   const iconSize = 18;
   const { toast } = useToast();
   const imageRef = useRef<HTMLInputElement>(null);
 
-  const [body, setBody] = useState(initialContent);
-
-  const editor = useEditor({
-    extensions: [StarterKit, Link, TipTapImage],
-    content: initialContent,
-    autofocus: true,
-    editable: isEditable,
-    injectCSS: false,
-    onUpdate: ({ editor }) => {
-      setBody(editor.getHTML());
-    },
-    onDestroy,
-  });
-
-  useEffect(() => {
-    const id = setTimeout(() => {
-      onChangeBody(body);
-      onChangeTags(extractTags(body));
-    }, 1000);
-
-    return () => {
-      clearTimeout(id);
-    };
-  }, [body]);
-
   return (
-    <Flex
-      direction="column"
-      h="100%"
-      overflow="hidden"
-      className={article}
-      css={{
-        fontSize: "16px",
-        "& > div:first-child": {
-          flexGrow: "1",
-          flexShrink: "1",
-          h: "100%",
-          overflow: "scroll",
-        },
-        "& *:focus-visible": {
-          outline: "none",
-        },
-        "& p.is-editor-empty:first-child::before": {
-          content: "attr(data-placeholder)",
-          color: "muted.foreground",
-        },
-      }}
-    >
-      {editor && <EditorContent editor={editor} />}
-      {!editor && (
-        <styled.div h="100%">
-          <p>Loading...</p>
-        </styled.div>
-      )}
-
+    <>
       <Flex
         flexGrow="0"
         flexShrink="0"
@@ -128,23 +60,23 @@ export function Editor({
         py="s.100"
         overflow="scroll"
       >
-        {editor?.can().chain().focus().undo().run() && (
+        {editor.can().chain().focus().undo().run() && (
           <StyleButton
             icon={<Undo2 size={iconSize} />}
-            onClick={() => editor?.chain().focus().undo().run()}
+            onClick={() => editor.chain().focus().undo().run()}
           />
         )}
 
-        {editor?.can().chain().focus().redo().run() && (
+        {editor.can().chain().focus().redo().run() && (
           <StyleButton
             icon={<Redo2 size={iconSize} />}
-            onClick={() => editor?.chain().focus().redo().run()}
+            onClick={() => editor.chain().focus().redo().run()}
           />
         )}
 
         <StyleButton
           icon={<Pilcrow size={iconSize} />}
-          onClick={() => editor?.chain().focus().setNode("paragraph").run()}
+          onClick={() => editor.chain().focus().setNode("paragraph").run()}
         />
 
         <Popover>
@@ -153,7 +85,7 @@ export function Editor({
               variant="outline"
               h="auto"
               p="s.50"
-              pressed={editor?.isActive("heading")}
+              pressed={editor.isActive("heading")}
             >
               <Heading size={iconSize} />
             </Toggle>
@@ -163,35 +95,35 @@ export function Editor({
               <StyleButton
                 icon={<Heading1 size={iconSize} />}
                 onClick={() =>
-                  editor?.chain().focus().toggleHeading({ level: 1 }).run()
+                  editor.chain().focus().toggleHeading({ level: 1 }).run()
                 }
               />
 
               <StyleButton
                 icon={<Heading2 size={iconSize} />}
                 onClick={() =>
-                  editor?.chain().focus().toggleHeading({ level: 2 }).run()
+                  editor.chain().focus().toggleHeading({ level: 2 }).run()
                 }
               />
 
               <StyleButton
                 icon={<Heading3 size={iconSize} />}
                 onClick={() =>
-                  editor?.chain().focus().toggleHeading({ level: 3 }).run()
+                  editor.chain().focus().toggleHeading({ level: 3 }).run()
                 }
               />
 
               <StyleButton
                 icon={<Heading4 size={iconSize} />}
                 onClick={() =>
-                  editor?.chain().focus().toggleHeading({ level: 4 }).run()
+                  editor.chain().focus().toggleHeading({ level: 4 }).run()
                 }
               />
 
               <StyleButton
                 icon={<Heading5 size={iconSize} />}
                 onClick={() =>
-                  editor?.chain().focus().toggleHeading({ level: 5 }).run()
+                  editor.chain().focus().toggleHeading({ level: 5 }).run()
                 }
               />
             </Flex>
@@ -200,30 +132,30 @@ export function Editor({
 
         <StyleButton
           icon={<List size={iconSize} />}
-          onClick={() => editor?.chain().focus().toggleBulletList().run()}
-          isPressed={editor?.isActive("bulletList")}
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          isPressed={editor.isActive("bulletList")}
         />
 
         <StyleButton
           icon={<ListOrdered size={iconSize} />}
-          onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-          isPressed={editor?.isActive("orderedList")}
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          isPressed={editor.isActive("orderedList")}
         />
 
-        {editor?.can().sinkListItem("listItem") && (
+        {editor.can().sinkListItem("listItem") && (
           <StyleButton
             icon={<Indent size={iconSize} />}
             onClick={() =>
-              editor?.chain().focus().sinkListItem("listItem").run()
+              editor.chain().focus().sinkListItem("listItem").run()
             }
           />
         )}
 
-        {editor?.can().liftListItem("listItem") && (
+        {editor.can().liftListItem("listItem") && (
           <StyleButton
             icon={<Outdent size={iconSize} />}
             onClick={() =>
-              editor?.chain().focus().liftListItem("listItem").run()
+              editor.chain().focus().liftListItem("listItem").run()
             }
           />
         )}
@@ -232,9 +164,9 @@ export function Editor({
           icon={<LinkIcon size={iconSize} />}
           onClick={() => {
             const url = window.prompt("URL");
-            url && editor?.chain().focus().setLink({ href: url }).run();
+            url && editor.chain().focus().setLink({ href: url }).run();
           }}
-          isPressed={editor?.isActive("link")}
+          isPressed={editor.isActive("link")}
         />
 
         <StyleButton
@@ -244,7 +176,7 @@ export function Editor({
               imageRef.current.click();
             }
           }}
-          isPressed={editor?.isActive("image")}
+          isPressed={editor.isActive("image")}
         />
 
         <styled.input
@@ -282,29 +214,16 @@ export function Editor({
             const name = createId();
             try {
               const body = new Uint8Array(await converted.arrayBuffer());
-              const result = await uploadFileOnPost(
-                postId,
-                name,
-                body,
-                mimeType,
-                1400
-              );
+              const file = await uploadFile(name, body, mimeType, 1400);
 
-              if (result.fileOnPost) {
-                editor
-                  ?.chain()
-                  .focus()
-                  .setImage({
-                    src: getUrl(result.fileOnPost.file, "webp@1400"),
-                    alt: result.fileOnPost.fileId,
-                  })
-                  .run();
-              } else {
-                toast({
-                  title: "Error",
-                  description: "画像をアップロードできませんでした。",
-                });
-              }
+              editor
+                .chain()
+                .focus()
+                .setImage({
+                  src: getUrl(file, "webp@1400"),
+                  alt: file.id,
+                })
+                .run();
 
               if (imageRef.current) {
                 imageRef.current.value = "";
@@ -321,29 +240,29 @@ export function Editor({
 
         <StyleButton
           icon={<Bold size={iconSize} />}
-          onClick={() => editor?.chain().focus().toggleBold().run()}
-          isPressed={editor?.isActive("bold")}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          isPressed={editor.isActive("bold")}
         />
 
         <StyleButton
           icon={<Italic size={iconSize} />}
-          onClick={() => editor?.chain().focus().toggleItalic().run()}
-          isPressed={editor?.isActive("italic")}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          isPressed={editor.isActive("italic")}
         />
 
         <StyleButton
           icon={<Quote size={iconSize} />}
-          onClick={() => editor?.chain().focus().toggleBlockquote().run()}
-          isPressed={editor?.isActive("blockquote")}
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          isPressed={editor.isActive("blockquote")}
         />
 
         <StyleButton
           icon={<Code2 size={iconSize} />}
-          onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
-          isPressed={editor?.isActive("codeBlock")}
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          isPressed={editor.isActive("codeBlock")}
         />
       </Flex>
-    </Flex>
+    </>
   );
 }
 

@@ -144,7 +144,7 @@ export function View({ user, isSignedIn }: Props) {
             const t = inputTags.value[key];
             if (t) {
               return (
-                <styled.p key={t.id} fontSize=".8rem" whiteSpace="nowrap">
+                <styled.p key={t.id} fontSize=".9rem" whiteSpace="nowrap">
                   #{t.name}
                 </styled.p>
               );
@@ -153,72 +153,68 @@ export function View({ user, isSignedIn }: Props) {
         </Flex>
       }
     >
-      <Container h="100%">
-        <Box id="scroll" w="100%" h="100%" overflowY="scroll">
-          <InfiniteScroll
-            scrollableTarget="scroll"
-            dataLength={posts.length}
-            next={() => {
-              fetch(inputTags.value, inputText.value, false);
-            }}
-            hasMore={posts.length < count}
-            loader={
-              <styled.p mt="s.100" textAlign="center">
-                Loading...
+      <Container>
+        <InfiniteScroll
+          dataLength={posts.length}
+          next={() => {
+            fetch(inputTags.value, inputText.value, false);
+          }}
+          hasMore={posts.length < count}
+          loader={
+            <styled.p mt="s.100" textAlign="center">
+              Loading...
+            </styled.p>
+          }
+        >
+          <Flex my="m.50" gap="s.200" align="center">
+            <Box
+              flexShrink="0"
+              w="m.150"
+              h="m.150"
+              borderRadius="token(sizes.m.150)"
+              overflow="hidden"
+              bg="border"
+            >
+              {user.profile?.thumbnail && (
+                <styled.img
+                  src={getUrl(user.profile.thumbnail, "webp@640")}
+                  alt="thumbnail"
+                  w="100%"
+                  h="100%"
+                  objectFit="cover"
+                />
+              )}
+            </Box>
+
+            <Box flexShrink="1">
+              <styled.h1 fontWeight="bold" fontSize="1.1rem" lineHeight="1.5">
+                {user.profile?.displayName || user.customId}
+              </styled.h1>
+              <styled.p mt="s.50" fontSize=".9rem" lineHeight="1.75">
+                {user.profile?.introduction || ""}
               </styled.p>
-            }
-          >
-            <Flex my="m.50" gap="s.200" align="center">
-              <Box
-                flexShrink="0"
-                w="m.150"
-                h="m.150"
-                borderRadius="token(sizes.m.150)"
-                overflow="hidden"
-                mt="s.100"
-                bg="border"
+            </Box>
+          </Flex>
+
+          {posts.map((p) => {
+            return (
+              <styled.div
+                key={p.id}
+                css={{
+                  "&:not(:first-child)": {
+                    borderTop: "1px solid token(colors.border)",
+                  },
+                }}
               >
-                {user.profile?.thumbnail && (
-                  <styled.img
-                    src={getUrl(user.profile.thumbnail, "webp@640")}
-                    alt="thumbnail"
-                    w="100%"
-                    h="100%"
-                    objectFit="cover"
-                  />
-                )}
-              </Box>
-
-              <Box flexShrink="1">
-                <styled.h1 fontWeight="bold" fontSize="1.1rem">
-                  {user.profile?.displayName || user.customId}
-                </styled.h1>
-                <styled.p mt="s.50" fontSize=".9rem">
-                  {user.profile?.introduction || ""}
-                </styled.p>
-              </Box>
-            </Flex>
-
-            {posts.map((p) => {
-              return (
-                <styled.div
-                  key={p.id}
-                  css={{
-                    "&:not(:first-child)": {
-                      borderTop: "1px solid token(colors.border)",
-                    },
-                  }}
-                >
-                  <ListItem
-                    post={p}
-                    isEditable={false}
-                    customId={user.customId || undefined}
-                  />
-                </styled.div>
-              );
-            })}
-          </InfiniteScroll>
-        </Box>
+                <ListItem
+                  post={p}
+                  isEditable={false}
+                  customId={user.customId || undefined}
+                />
+              </styled.div>
+            );
+          })}
+        </InfiniteScroll>
       </Container>
     </Frame>
   );

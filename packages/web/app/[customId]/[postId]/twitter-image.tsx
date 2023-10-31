@@ -36,7 +36,7 @@ export default async function Image({ params: { postId } }: Props) {
           justifyContent: "center",
           width: "100%",
           height: "100%",
-          padding: "3rem",
+          padding: "6rem",
           backgroundColor: "#fafafa",
         }}
       >
@@ -45,8 +45,8 @@ export default async function Image({ params: { postId } }: Props) {
           alt="Palt"
           style={{
             position: "absolute",
-            bottom: "3rem",
-            right: "3rem",
+            bottom: "6rem",
+            right: "6rem",
             height: "3rem",
           }}
         />

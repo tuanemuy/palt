@@ -15,7 +15,11 @@ import {
 export type { Post, Revision, Tag, AccessibleUserOnPost, FileOnPost } from "db";
 
 export type FullPost = Post & {
-  user: User & { profile: Profile | null };
+  user: User & {
+    profile:
+      | (Profile & { thumbnail: (File & { assets: Asset[] }) | null })
+      | null;
+  };
   tags: (TagOnPost & {
     tag: Tag;
   })[];

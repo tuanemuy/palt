@@ -46,33 +46,36 @@ export function Frame({
   }, []);
 
   return (
-    <Flex
-      position="absolute"
-      top="0"
-      left="0"
-      w="100vw"
-      h="var(--visual-viewport-height)"
-    >
+    <>
       {drawer && (
         <Drawer isOpen={isOpen} onChangeOpen={setIsOpen}>
           {drawer}
         </Drawer>
       )}
 
-      <Flex direction="column" h="100%" w="100%">
-        <Container>
-          <styled.header position="relative" h="50px">
+      <styled.header
+        position="fixed"
+        zIndex="1"
+        top="0"
+        left="0"
+        w="100vw"
+        h="50px"
+        bg="background"
+      >
+        <Container h="100%">
+          <Box position="relative" w="100%" h="100%">
             <Flex
               position="absolute"
               zIndex="2"
               top="50%"
               left="0"
               gap="s.100"
+              align="center"
+              h="100%"
               transform="translateY(-50%)"
             >
               {drawer && (
                 <Button
-                  display={{ base: "block", md: "none" }}
                   p="0"
                   h="auto"
                   variant="ghost"
@@ -108,30 +111,37 @@ export function Frame({
                 {trailing}
               </Box>
             )}
-          </styled.header>
+          </Box>
         </Container>
+      </styled.header>
 
-        <styled.main
-          id="main"
-          w="100%"
-          h="100%"
-          flexShrink="1"
-          overflowY="scroll"
-          css={{
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-          }}
+      <styled.main
+        id="main"
+        position="relative"
+        zIndex="0"
+        w="100%"
+        pt="50px"
+        pb={footer ? "50px" : "0"}
+      >
+        {children}
+      </styled.main>
+
+      {footer && (
+        <styled.footer
+          position="fixed"
+          zIndex="1"
+          bottom="calc(100dvh - var(--visual-viewport-height))"
+          h="50px"
+          w="100vw"
+          bg="background"
         >
-          {children}
-        </styled.main>
-
-        {footer && (
-          <styled.footer py="s.150" bg="background">
-            <Container>{footer}</Container>
-          </styled.footer>
-        )}
-      </Flex>
-    </Flex>
+          <Container h="100%">
+            <Flex align="center" w="100%" h="100%">
+              {footer}
+            </Flex>
+          </Container>
+        </styled.footer>
+      )}
+    </>
   );
 }
