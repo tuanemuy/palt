@@ -53,6 +53,7 @@ export function InnerView({ post, userId }: InnerViewProps) {
       (au) => au.userId === userId && au.level === AccessLevel.EDIT
     ).length || 0) > 0;
   const [isEditor, setIsEditor] = useState(false);
+  const [bottom, setBottom] = useState<string>("100vh");
   const [body, setBody] = useState(post.body);
 
   const editor = useEditor({
@@ -84,6 +85,19 @@ export function InnerView({ post, userId }: InnerViewProps) {
       clearTimeout(id);
     };
   }, [body]);
+
+  useEffect(() => {
+    const updateBottom = () => {
+      if (editor?.isFocused) {
+        setBottom(`${window.scrollY + (window.visualViewport?.height || 0)}px`);
+      }
+    };
+    window.addEventListener("scroll", updateBottom);
+
+    return () => {
+      window.removeEventListener("scroll", updateBottom);
+    };
+  }, [editor]);
 
   return (
     <Frame
@@ -130,6 +144,7 @@ export function InnerView({ post, userId }: InnerViewProps) {
           />
         )
       }
+      bottom={editor?.isFocused ? bottom : undefined}
     >
       <Container>{editor && <EditorContent editor={editor} />}</Container>
     </Frame>

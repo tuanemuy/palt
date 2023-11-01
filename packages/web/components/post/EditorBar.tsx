@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { Editor } from "@tiptap/react";
-import twitter from "twitter-text";
 import { createId } from "@paralleldrive/cuid2";
 import { FullFile, getUrl } from "core/file";
 import { useToast } from "@/components/ui/toast";
@@ -57,8 +56,9 @@ export function EditorBar({ editor, uploadFile }: Props) {
         flexGrow="0"
         flexShrink="0"
         gap="s.100"
+        w="100%"
         py="s.100"
-        overflow="scroll"
+        overflowX="scroll"
       >
         {editor.can().chain().focus().undo().run() && (
           <StyleButton

@@ -103,6 +103,7 @@ type InnerViewProps = {
 export function InnerView({ post }: InnerViewProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const [bottom, setBottom] = useState<string>("100vh");
   const [body, setBody] = useState(post.body);
   const [accessibleUsers, setAccessibleUsers] = useState<AccessibleUser[]>(
     post.accessibleUsers
@@ -158,6 +159,19 @@ export function InnerView({ post }: InnerViewProps) {
       clearTimeout(id);
     };
   }, [body]);
+
+  useEffect(() => {
+    const updateBottom = () => {
+      if (editor?.isFocused) {
+        setBottom(`${window.scrollY + (window.visualViewport?.height || 0)}px`);
+      }
+    };
+    window.addEventListener("scroll", updateBottom);
+
+    return () => {
+      window.removeEventListener("scroll", updateBottom);
+    };
+  }, [editor]);
 
   return (
     <Frame
@@ -223,7 +237,7 @@ export function InnerView({ post }: InnerViewProps) {
                       )}
                     </Flex>
 
-                    <Box mt="m.50">
+                    <Box mt="s.200">
                       <styled.h3
                         pb="s.50"
                         borderBottom="1px solid token(colors.border)"
@@ -248,6 +262,39 @@ export function InnerView({ post }: InnerViewProps) {
                           );
                         })}
                       </styled.ul>
+                    </Box>
+
+                    <Box mt="s.200">
+                      <styled.h3
+                        pb="s.50"
+                        borderBottom="1px solid token(colors.border)"
+                      >
+                        共有リンク
+                      </styled.h3>
+
+                      <Box
+                        overflowX="scroll"
+                        mt="s.50"
+                        py="s.100"
+                        css={{
+                          "& a": {
+                            textDecoration: "underline",
+                          },
+                        }}
+                      >
+                        <NextLink
+                          href={`/shared/${post.id}`}
+                        >{`${process.env.NEXT_PUBLIC_BASE_URL}/shared/${post.id}`}</NextLink>
+                      </Box>
+
+                      <styled.p
+                        mt="s.100"
+                        fontSize=".8rem"
+                        lineHeight="1.75"
+                        color="muted.foreground"
+                      >
+                        共有済みのユーザーはこのリンクからアクセスできます。
+                      </styled.p>
                     </Box>
                   </DialogHeader>
                 </DialogContent>
@@ -324,6 +371,7 @@ export function InnerView({ post }: InnerViewProps) {
           />
         )
       }
+      bottom={editor?.isFocused ? bottom : undefined}
     >
       <Container>{editor && <EditorContent editor={editor} />}</Container>
     </Frame>

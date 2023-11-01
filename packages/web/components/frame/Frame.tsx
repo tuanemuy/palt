@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { styled } from "@/lib/style/system/jsx";
 
 import { Container, Box, Flex } from "@/lib/style/system/jsx";
@@ -14,6 +14,7 @@ type Props = {
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
   footer?: React.ReactNode;
+  bottom?: string;
   children: React.ReactNode;
 };
 
@@ -23,27 +24,10 @@ export function Frame({
   leading,
   trailing,
   footer,
+  bottom,
   children,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) {
-      document.documentElement.style.removeProperty("--visual-viewport-height");
-      return;
-    }
-
-    const f = () =>
-      document.documentElement.style.setProperty(
-        "--visual-viewport-height",
-        `${vv.height}px`
-      );
-
-    vv.addEventListener("resize", f);
-    f();
-    return () => vv.removeEventListener("resize", f);
-  }, []);
 
   return (
     <>
@@ -54,13 +38,15 @@ export function Frame({
       )}
 
       <styled.header
-        position="fixed"
+        position={bottom ? "absolute" : "fixed"}
         zIndex="1"
-        top="0"
         left="0"
         w="100vw"
         h="50px"
         bg="background"
+        style={{
+          top: bottom ? `calc(${bottom} - 100dvh)` : "0",
+        }}
       >
         <Container h="100%">
           <Box position="relative" w="100%" h="100%">
@@ -128,12 +114,16 @@ export function Frame({
 
       {footer && (
         <styled.footer
-          position="fixed"
+          position={bottom ? "absolute" : "fixed"}
           zIndex="1"
-          bottom="calc(100dvh - var(--visual-viewport-height))"
+          left="0"
           h="50px"
           w="100vw"
           bg="background"
+          overflow="hidden"
+          style={{
+            top: bottom ? `calc(${bottom} - 50px)` : "calc(100dvh - 50px)",
+          }}
         >
           <Container h="100%">
             <Flex align="center" w="100%" h="100%">
