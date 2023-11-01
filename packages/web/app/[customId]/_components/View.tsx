@@ -200,6 +200,7 @@ export function View({ user, isSignedIn }: Props) {
 
             <Box flexShrink="1">
               <styled.h1 fontWeight="bold" fontSize="1.1rem" lineHeight="1.5">
+                {user.profile?.blogName ? `${user.profile.blogName} - ` : ""}
                 {user.profile?.displayName || user.customId}
               </styled.h1>
               <styled.p mt="s.50" fontSize=".9rem" lineHeight="1.75">
