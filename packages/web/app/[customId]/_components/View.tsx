@@ -4,6 +4,7 @@ import { useContext, useState, useEffect } from "react";
 import { FullUser } from "core/user";
 import { Post, Tag } from "core/post";
 import { getUrl } from "core/file";
+import { nl2br } from "util/common";
 import { getPosts, getTags } from "../_action";
 import { Store } from "../_store";
 
@@ -199,13 +200,21 @@ export function View({ user, isSignedIn }: Props) {
             </Box>
 
             <Box flexShrink="1">
-              <styled.h1 fontWeight="bold" fontSize="1.1rem" lineHeight="1.5">
-                {user.profile?.blogName ? `${user.profile.blogName} - ` : ""}
-                {user.profile?.displayName || user.customId}
+              <styled.h1 fontWeight="bold" fontSize="1.25rem" lineHeight="1.5">
+                {user.profile?.blogName ||
+                  `${user.profile?.displayName || user.customId}のノート`}
               </styled.h1>
-              <styled.p mt="s.50" fontSize=".9rem" lineHeight="1.75">
-                {user.profile?.introduction || ""}
+              <styled.p fontSize=".8rem">
+                by {user.profile?.displayName || user.customId}
               </styled.p>
+              <styled.p
+                mt="s.50"
+                fontSize=".9rem"
+                lineHeight="1.75"
+                dangerouslySetInnerHTML={{
+                  __html: nl2br(user.profile?.introduction || ""),
+                }}
+              />
             </Box>
           </Flex>
 

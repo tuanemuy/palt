@@ -218,6 +218,7 @@ export default defineConfig({
     },
     "input, textarea": {
       fontSize: "16px !important",
+      lineHeight: "1.5 !important",
     },
   }),
   staticCss: {

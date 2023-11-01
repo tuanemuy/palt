@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { extractTitle, extractDescription } from "core/post";
 import { getUrl } from "core/file";
+import { nl2br } from "util/common";
 import { getPost } from "../_action";
 
 import NextLink from "next/link";
@@ -49,7 +50,13 @@ export default async function Page({ params: { postId } }: Props) {
   if (post) {
     return (
       <Frame
-        title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
+        title={
+          post.user.profile?.blogName ? (
+            <styled.p fontWeight="bold">{post.user.profile.blogName}</styled.p>
+          ) : (
+            <styled.img src="/images/logo_palt.png" w="auto" h="s.200" />
+          )
+        }
         leading={
           <NextLink href={`/${post.user.customId}`}>
             <ChevronLeft size={24} />
@@ -107,9 +114,14 @@ export default async function Page({ params: { postId } }: Props) {
               <styled.h1 fontWeight="bold" fontSize="1.1rem" lineHeight="1.5">
                 {post.user.profile?.displayName || post.user.customId}
               </styled.h1>
-              <styled.p mt="s.50" fontSize=".9rem" lineHeight="1.75">
-                {post.user.profile?.introduction || ""}
-              </styled.p>
+              <styled.p
+                mt="s.50"
+                fontSize=".9rem"
+                lineHeight="1.75"
+                dangerouslySetInnerHTML={{
+                  __html: nl2br(post.user.profile?.introduction || ""),
+                }}
+              />
             </Box>
           </Flex>
         </Container>
