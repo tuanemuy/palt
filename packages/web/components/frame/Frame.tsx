@@ -14,7 +14,7 @@ type Props = {
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
   footer?: React.ReactNode;
-  bottom?: string;
+  absolute?: { top: string; bottom: string };
   children: React.ReactNode;
 };
 
@@ -24,7 +24,7 @@ export function Frame({
   leading,
   trailing,
   footer,
-  bottom,
+  absolute,
   children,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,14 +38,14 @@ export function Frame({
       )}
 
       <styled.header
-        position={bottom ? "absolute" : "fixed"}
+        position={absolute ? "absolute" : "fixed"}
         zIndex="1"
         left="0"
         w="100vw"
         h="50px"
         bg="background"
         style={{
-          top: bottom ? `calc(${bottom} - 100dvh)` : "0",
+          top: absolute ? absolute.top : "0",
         }}
       >
         <Container h="100%">
@@ -114,7 +114,7 @@ export function Frame({
 
       {footer && (
         <styled.footer
-          position={bottom ? "absolute" : "fixed"}
+          position={absolute ? "absolute" : "fixed"}
           zIndex="1"
           left="0"
           h="50px"
@@ -122,7 +122,9 @@ export function Frame({
           bg="background"
           overflow="hidden"
           style={{
-            top: bottom ? `calc(${bottom} - 50px)` : "calc(100dvh - 50px)",
+            top: absolute
+              ? `calc(${absolute.bottom} - 50px)`
+              : "calc(100dvh - 50px)",
           }}
         >
           <Container h="100%">

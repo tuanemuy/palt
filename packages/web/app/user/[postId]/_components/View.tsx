@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import twitter from "twitter-text";
+import { throttle } from "lodash-es";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -103,7 +104,10 @@ type InnerViewProps = {
 export function InnerView({ post }: InnerViewProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [bottom, setBottom] = useState<string>("100vh");
+  const [absolute, setAbsolute] = useState<{ top: string; bottom: string }>({
+    top: "0",
+    bottom: "100dvh",
+  });
   const [body, setBody] = useState(post.body);
   const [accessibleUsers, setAccessibleUsers] = useState<AccessibleUser[]>(
     post.accessibleUsers
@@ -122,10 +126,16 @@ export function InnerView({ post }: InnerViewProps) {
     },
     onDestroy: () => cleanupPost({ postId: post.id }),
     onFocus: () => {
-      setBottom(`${window.scrollY + (window.visualViewport?.height || 0)}px`);
+      setAbsolute({
+        top: `${window.scrollY}px`,
+        bottom: `${window.scrollY + (window.visualViewport?.height || 0)}px`,
+      });
     },
     onBlur: () => {
-      setBottom(`${window.scrollY + (window.visualViewport?.height || 0)}px`);
+      setAbsolute({
+        top: `${window.scrollY}px`,
+        bottom: `${window.scrollY + (window.visualViewport?.height || 0)}px`,
+      });
     },
   });
 
@@ -167,15 +177,18 @@ export function InnerView({ post }: InnerViewProps) {
   }, [body]);
 
   useEffect(() => {
-    const updateBottom = () => {
+    const updateAbsolute = throttle(() => {
       if (editor?.isFocused) {
-        setBottom(`${window.scrollY + (window.visualViewport?.height || 0)}px`);
+        setAbsolute({
+          top: `${window.scrollY}px`,
+          bottom: `${window.scrollY + (window.visualViewport?.height || 0)}px`,
+        });
       }
-    };
-    window.addEventListener("scroll", updateBottom);
+    }, 1000 / 60);
+    window.addEventListener("scroll", updateAbsolute, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", updateBottom);
+      window.removeEventListener("scroll", updateAbsolute);
     };
   }, [editor]);
 
@@ -377,7 +390,7 @@ export function InnerView({ post }: InnerViewProps) {
           />
         )
       }
-      bottom={editor?.isFocused ? bottom : undefined}
+      absolute={editor?.isFocused ? absolute : undefined}
     >
       <Container>{editor && <EditorContent editor={editor} />}</Container>
     </Frame>
