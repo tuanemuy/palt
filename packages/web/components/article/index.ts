@@ -6,7 +6,7 @@ export const article = css({
     fontWeight: "bold",
     lineHeight: "1.5",
   },
-  "& p, & ul, & ol, & table, & img, & code, & blockquote, & dl, & iframe": {
+  "& p, & ul, & ol, & table, & img, & pre, & blockquote, & dl, & iframe": {
     mt: "1.25rem",
   },
   "& p + p": {
@@ -64,8 +64,20 @@ export const article = css({
   "& li": {
     padding: "0.15rem 0",
   },
+  "& pre": {
+    p: "s.200",
+    bg: "primary",
+    color: "primary.foreground",
+    lineHeight: "1.5",
+    borderRadius: "md",
+  },
   "& code": {
     fontFamily: "mono",
+    lineHeight: "1.5",
+  },
+  "& blockquote": {
+    p: "s.100",
+    borderLeft: "2px solid token(colors.border)",
   },
   "& img": {
     maxW: "100%",

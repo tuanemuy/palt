@@ -119,6 +119,7 @@ export function Frame({
           left="0"
           h="50px"
           w="100vw"
+          pb="s.100"
           bg="background"
           overflow="hidden"
           style={{
