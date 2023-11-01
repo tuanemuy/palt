@@ -9,7 +9,7 @@ transform(props) {
     maxW: "l.250",
     marginX: "auto",
     px: {
-      base: "s.100",
+      base: "s.200",
       md: "m.50",
       lg: "m.100"
     }

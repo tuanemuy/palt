@@ -15,7 +15,7 @@ export function EditorContent({ editor }: Props) {
       css={{
         fontSize: "16px",
         "& .tiptap": {
-          p: "s.100",
+          p: "s.50",
           pb: "m.100",
         },
         "& *:focus-visible": {
