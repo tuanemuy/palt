@@ -216,6 +216,18 @@ export function View({ user }: Props) {
               Loading...
             </styled.p>
           }
+          pullDownToRefresh
+          pullDownToRefreshThreshold={200}
+          pullDownToRefreshContent={
+            <styled.p textAlign="center">&#8595; Pull down to refresh</styled.p>
+          }
+          releaseToRefreshContent={
+            <styled.p textAlign="center">&#8593; Release to refresh</styled.p>
+          }
+          refreshFunction={() => {
+            console.log("refresh");
+            fetch(inputTags.value, inputText.value, true);
+          }}
         >
           {posts.length < 1 && (
             <Button
@@ -233,7 +245,7 @@ export function View({ user }: Props) {
               <styled.div
                 key={p.id}
                 css={{
-                  "&:not(:first-child)": {
+                  "&:not(:nth-of-type(2))": {
                     borderTop: "1px solid token(colors.border)",
                   },
                 }}

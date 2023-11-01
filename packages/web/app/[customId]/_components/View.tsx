@@ -165,6 +165,18 @@ export function View({ user, isSignedIn }: Props) {
               Loading...
             </styled.p>
           }
+          pullDownToRefresh
+          pullDownToRefreshThreshold={200}
+          pullDownToRefreshContent={
+            <styled.p textAlign="center">&#8595; Pull down to refresh</styled.p>
+          }
+          releaseToRefreshContent={
+            <styled.p textAlign="center">&#8593; Release to refresh</styled.p>
+          }
+          refreshFunction={() => {
+            console.log("refresh");
+            fetch(inputTags.value, inputText.value, true);
+          }}
         >
           <Flex my="m.50" gap="s.200" align="center">
             <Box
