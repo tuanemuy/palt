@@ -25,6 +25,11 @@ export async function generateMetadata({ params: { customId } }: Props) {
     return {
       title,
       description,
+      twitter: {
+        title,
+        description,
+        card: "summary_large_image",
+      },
     };
   } else {
     return {
