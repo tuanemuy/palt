@@ -2,7 +2,7 @@ import { prisma } from "db";
 import { auth } from "@/lib/next-auth";
 
 import NextLink from "next/link";
-import { Container, styled } from "@/lib/style/system/jsx";
+import { Container, Flex, styled } from "@/lib/style/system/jsx";
 import { article } from "@/components/article";
 import { Frame } from "@/components/frame";
 import { Button } from "@/components/ui/button";
@@ -77,6 +77,22 @@ export default async function Page() {
             今すぐ使ってみる
           </Button>
         </NextLink>
+
+        <Flex
+          align="center"
+          gap="s.200"
+          mt="m.50"
+          css={{
+            "& a": {
+              textDecoration: "underline",
+            },
+          }}
+        >
+          <NextLink href="/terms-of-use" target="_blank">
+            利用規約
+          </NextLink>
+          <NextLink href="/privacy-policy">個人情報保護方針</NextLink>
+        </Flex>
       </Container>
     </Frame>
   );

@@ -117,15 +117,15 @@ export function Frame({
           position={absolute ? "absolute" : "fixed"}
           zIndex="1"
           left="0"
-          h="50px"
+          h="64px"
           w="100vw"
           pb="s.100"
           bg="background"
           overflow="hidden"
           style={{
             top: absolute
-              ? `calc(${absolute.bottom} - 50px)`
-              : "calc(100dvh - 50px)",
+              ? `calc(${absolute.bottom} - 64px)`
+              : "calc(100dvh - 64px)",
           }}
         >
           <Container h="100%">
