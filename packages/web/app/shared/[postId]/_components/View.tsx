@@ -66,6 +66,12 @@ export function InnerView({ post, userId }: InnerViewProps) {
       setBody(editor.getHTML());
     },
     onDestroy: () => cleanupPost({ postId: post.id }),
+    onFocus: () => {
+      setBottom(`${window.scrollY + (window.visualViewport?.height || 0)}px`);
+    },
+    onBlur: () => {
+      setBottom(`${window.scrollY + (window.visualViewport?.height || 0)}px`);
+    },
   });
 
   useEffect(() => {
