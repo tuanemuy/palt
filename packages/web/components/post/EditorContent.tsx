@@ -12,14 +12,11 @@ export function EditorContent({ editor }: Props) {
   return (
     <Box
       className={article}
-      p="s.50"
       css={{
         fontSize: "16px",
-        "& > div:first-child": {
-          flexGrow: "1",
-          flexShrink: "1",
-          h: "100%",
-          overflow: "scroll",
+        "& .tiptap": {
+          p: "s.100",
+          pb: "m.100",
         },
         "& *:focus-visible": {
           outline: "none",

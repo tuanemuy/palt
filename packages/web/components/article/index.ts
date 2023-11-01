@@ -70,6 +70,7 @@ export const article = css({
     color: "primary.foreground",
     lineHeight: "1.5",
     borderRadius: "md",
+    overflow: "scroll",
   },
   "& code": {
     fontFamily: "mono",
