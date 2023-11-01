@@ -35,7 +35,7 @@ export async function generateMetadata({ params: { postId } }: Props) {
     };
   } else {
     return {
-      title: "Palt",
+      title: "Palt | 些細なことも、すべて書き留めよう。",
       description:
         "Paltは、書くことに集中するための、非常にシンプルなメモアプリです。",
     };

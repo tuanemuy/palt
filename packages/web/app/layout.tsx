@@ -6,11 +6,11 @@ import { Toaster } from "@/components/ui/toast";
 import { Providers } from "./_components/Providers";
 
 export const metadata: Metadata = {
-  title: "Palt",
+  title: "Palt | 些細なことも、すべて書き留めよう。",
   description:
     "Paltは、書くことに集中するための、非常にシンプルなメモアプリです。",
   twitter: {
-    title: "Palt",
+    title: "Palt | 些細なことも、すべて書き留めよう。",
     description:
       "Paltは、書くことに集中するための、非常にシンプルなメモアプリです。",
   },
