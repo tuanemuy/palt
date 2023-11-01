@@ -211,13 +211,14 @@ export default defineConfig({
         base: "14px",
         md: "16px",
       },
+      bg: "background",
     },
     td: {
       whiteSpace: "nowrap",
     },
     "input, textarea": {
-      fontSize: "16px !important"
-    }
+      fontSize: "16px !important",
+    },
   }),
   staticCss: {
     recipes: {

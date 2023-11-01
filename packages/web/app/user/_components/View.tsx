@@ -217,7 +217,7 @@ export function View({ user }: Props) {
             </styled.p>
           }
           pullDownToRefresh
-          pullDownToRefreshThreshold={200}
+          pullDownToRefreshThreshold={100}
           pullDownToRefreshContent={
             <styled.p textAlign="center">&#8595; Pull down to refresh</styled.p>
           }

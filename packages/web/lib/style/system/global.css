@@ -42,7 +42,8 @@
     }
 
   html, body {
-    font-size: 14px
+    font-size: 14px;
+    background: var(--colors-background)
     }
 
   td {
