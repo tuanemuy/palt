@@ -46,7 +46,7 @@ export function View({ user, isSignedIn }: Props) {
     const result = await getPosts({
       skip,
       take: perPage,
-      orderBy: user.profile?.orderBy || "createdAt",
+      orderBy: /* user.profile?.orderBy || */ "createdAt",
       userId: user.id,
       tagIds: tagIds.length > 0 ? tagIds : undefined,
       text: t === "" ? undefined : t,
