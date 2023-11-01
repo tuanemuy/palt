@@ -60,6 +60,7 @@ model Profile {
   thumbnail    File?   @relation(fields: [thumbnailId], references: [id], onDelete: Restrict)
   displayName  String?
   introduction String?
+  blogName     String?
   orderBy      String  @default("createdAt")
 }
 

@@ -11,11 +11,11 @@ export const editUserSchema = z.object({
   customId: z
     .string()
     .regex(/^[A-Za-z][a-zA-Z0-9]*/)
-    .min(1)
     .max(30)
-    .optional(),
+    .nullish(),
   displayName: z.string().max(30).nullish(),
   introduction: z.string().max(300).nullish(),
+  blogName: z.string().max(30).nullish(),
   orderBy: z.enum([OrderBy.CREATED, OrderBy.UPDATED]).optional(),
   thumbnailId: z.string().cuid().nullish(),
 });

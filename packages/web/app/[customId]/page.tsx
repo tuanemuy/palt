@@ -13,12 +13,25 @@ export async function generateMetadata({ params: { customId } }: Props) {
   const { user } = await getUserByCustomId({ customId });
 
   if (user) {
+    const title = user.profile?.blogName
+      ? `${user.profile.blogName} | ${
+          user.profile?.displayName || user.customId
+        }`
+      : `${user.profile?.displayName || user.customId}のノート | Palt`;
+    const description =
+      user.profile?.introduction ||
+      "Paltは、書くことに集中するための、非常にシンプルなメモアプリです。";
+
     return {
-      title: `${user.profile?.displayName || user.customId} | Palt`,
+      title,
+      description,
+    };
+  } else {
+    return {
+      title: "Palt | 些細なことも、すべて書き留めよう。",
       description:
         "Paltは、書くことに集中するための、非常にシンプルなメモアプリです。",
     };
-  } else {
   }
 }
 

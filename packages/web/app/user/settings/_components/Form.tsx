@@ -6,10 +6,12 @@ import { createId } from "@paralleldrive/cuid2";
 import { SubmitHandler, useZodForm } from "util/form";
 import { FullUser, OrderBy, stringToOrderBy, orderByToString } from "core/user";
 import { FullFile, getUrl } from "core/file";
+import { emptyAsNull } from "util/form";
 import { useToast } from "@/components/ui/toast";
 import { editUser, uploadPublicFile, deleteFile } from "../../_action";
 import { ActionError, editUserSchema } from "../../_schema";
 
+import NextLink from "next/link";
 import { cx, css } from "@/lib/style/system/css";
 import { icon } from "@/lib/style/system/recipes";
 import { Box, Flex, styled } from "@/lib/style/system/jsx";
@@ -47,6 +49,7 @@ export function Form({ user }: Props) {
       customId: user.customId || undefined,
       displayName: user.profile?.displayName,
       introduction: user.profile?.introduction,
+      blogName: user.profile?.blogName,
       orderBy: stringToOrderBy(user.profile?.orderBy || "createdAt"),
     },
   });
@@ -220,7 +223,11 @@ export function Form({ user }: Props) {
 
       <Box mt="s.200">
         <Label htmlFor="custom-id">ユーザーID</Label>
-        <Input id="custom-id" {...register("customId")} mt="s.100" />
+        <Input
+          id="custom-id"
+          {...register("customId", { ...emptyAsNull })}
+          mt="s.100"
+        />
         <styled.p mt="s.100" fontSize=".8rem" color="muted.foreground">
           30文字以内 ／ 半角英数字
         </styled.p>
@@ -264,6 +271,49 @@ export function Form({ user }: Props) {
             <AlertDescription>正しく入力してください</AlertDescription>
           </Alert>
         )}
+      </Box>
+
+      <Box mt="s.200">
+        <Label htmlFor="blog-name">ブログ名</Label>
+        <Input
+          id="blog-name"
+          {...register("blogName", { ...emptyAsNull })}
+          mt="s.100"
+        />
+        <styled.p mt="s.100" fontSize=".8rem" color="muted.foreground">
+          30文字以内
+        </styled.p>
+
+        {errors.blogName && (
+          <Alert variant="destructive" mt="s.100">
+            <AlertCircle />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>正しく入力してください</AlertDescription>
+          </Alert>
+        )}
+      </Box>
+
+      <Box mt="s.200">
+        <Label htmlFor="blog-url">ブログURL</Label>
+        <Box
+          id="blog-url"
+          mt="s.100"
+          css={{
+            "& a": {
+              textDecoration: "underline",
+            },
+          }}
+        >
+          {user.customId && (
+            <NextLink
+              href={`${process.env.NEXT_PUBLIC_BASE_URL}/${user.customId}`}
+              target="_blank"
+            >{`${process.env.NEXT_PUBLIC_BASE_URL}/${user.customId}`}</NextLink>
+          )}
+          {!user.customId && (
+            <p>ユーザーIDを設定すると、公開した投稿がブログになります。</p>
+          )}
+        </Box>
       </Box>
 
       <Box mt="s.200">

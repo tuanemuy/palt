@@ -21,7 +21,8 @@ export async function generateMetadata({ params: { postId } }: Props) {
 
   if (post) {
     const title = `${extractTitle(post)} | ${
-      post.user.profile?.displayName || post.user.customId
+      post.user.profile?.blogName ||
+      `${post.user.profile?.displayName || post.user.customId}のノート`
     }`;
     const description = extractDescription(post.body);
     return {

@@ -100,12 +100,14 @@ export async function editUser(input: z.infer<typeof editUserSchema>) {
             create: {
               displayName: input.displayName,
               introduction: input.introduction,
+              blogName: input.blogName,
               orderBy: input.orderBy,
               thumbnailId: input.thumbnailId,
             },
             update: {
               displayName: input.displayName,
               introduction: input.introduction,
+              blogName: input.blogName,
               orderBy: input.orderBy,
               thumbnailId: input.thumbnailId,
             },
