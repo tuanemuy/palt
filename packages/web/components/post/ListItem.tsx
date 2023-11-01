@@ -40,32 +40,32 @@ export const ListItem = memo(function ListItem({
           left="0"
           bottom="0"
           w="100%"
-          h="s.200"
+          h="s.300"
           bg="linear-gradient(0deg, token(colors.background), transparent)"
         />
       </Box>
 
       <Flex justify="space-between" mt="0">
-        <styled.p fontSize=".8rem" color="muted.foreground">
+        <styled.p fontSize=".9rem" color="muted.foreground">
           {format(post.createdAt, "yyyy.MM.dd HH:mm")}
         </styled.p>
 
         {isEditable && (
           <Flex align="center" gap="s.150">
             <styled.div color={post.isPublic ? "warning" : "border"}>
-              {post.isPublic && <UnlockKeyhole size={16} />}
-              {!post.isPublic && <LockKeyhole size={16} />}
+              {post.isPublic && <UnlockKeyhole size={20} />}
+              {!post.isPublic && <LockKeyhole size={20} />}
             </styled.div>
 
             <NextLink href={`/user/${post.id}`}>
-              <PenSquare size={16} />
+              <PenSquare size={20} />
             </NextLink>
           </Flex>
         )}
 
         {!isEditable && customId && (
           <NextLink href={`/${customId}/${post.id}`}>
-            <BookOpen size={16} />
+            <BookOpen size={20} />
           </NextLink>
         )}
       </Flex>
