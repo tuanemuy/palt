@@ -21,7 +21,7 @@ export const ListItem = memo(function ListItem({
   customId,
 }: Props) {
   return (
-    <Box py="m.100">
+    <Box>
       <Box
         position="relative"
         maxH={{ base: "l.100", md: "l.200" }}

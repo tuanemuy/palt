@@ -7,7 +7,7 @@ import { restoreRevision } from "../../../_action";
 
 import NextLink from "next/link";
 import { Container, styled } from "@/lib/style/system/jsx";
-import { Frame } from "@/components/frame";
+import { Frame, Header } from "@/components/frame";
 import { RevisionListItem } from "@/components/post";
 
 import { ChevronLeft } from "lucide-react";
@@ -40,11 +40,15 @@ export function View({ post }: Props) {
 
   return (
     <Frame
-      title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
-      leading={
-        <NextLink href={`/user/${post.id}`}>
-          <ChevronLeft size={24} />
-        </NextLink>
+      header={
+        <Header
+          title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
+          leading={
+            <NextLink href={`/user/${post.id}`}>
+              <ChevronLeft size={24} />
+            </NextLink>
+          }
+        />
       }
     >
       <Container id="scroll" h="100%" overflowY="scroll">
@@ -53,8 +57,11 @@ export function View({ post }: Props) {
             <styled.div
               key={r.id}
               css={{
-                "&:not(:first-child)": {
-                  borderTop: "1px solid token(colors.border)",
+                py: "m.100",
+                borderTop: "1px solid token(colors.border)",
+                "&:first-child": {
+                  pt: "m.50",
+                  borderTop: "none",
                 },
               }}
             >

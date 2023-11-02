@@ -4,7 +4,7 @@ import { auth } from "@/lib/next-auth";
 import NextLink from "next/link";
 import { Container, Flex, styled } from "@/lib/style/system/jsx";
 import { article } from "@/components/article";
-import { Frame } from "@/components/frame";
+import { Frame, Header } from "@/components/frame";
 import { Button } from "@/components/ui/button";
 import { LogIn, UserCircle } from "lucide-react";
 
@@ -21,17 +21,21 @@ export default async function Page() {
 
   return (
     <Frame
-      title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
-      trailing={
-        user ? (
-          <NextLink href="/user">
-            <UserCircle size={24} />
-          </NextLink>
-        ) : (
-          <NextLink href="/api/auth/signin">
-            <LogIn size={24} />
-          </NextLink>
-        )
+      header={
+        <Header
+          title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
+          trailing={
+            user ? (
+              <NextLink href="/user">
+                <UserCircle size={24} />
+              </NextLink>
+            ) : (
+              <NextLink href="/api/auth/signin">
+                <LogIn size={24} />
+              </NextLink>
+            )
+          }
+        />
       }
     >
       <Container py="m.50">

@@ -2,7 +2,7 @@ import { auth } from "@/lib/next-auth";
 
 import NextLink from "next/link";
 import { Container, styled } from "@/lib/style/system/jsx";
-import { Frame } from "@/components/frame";
+import { Frame, Header } from "@/components/frame";
 import { article } from "@/components/article";
 import { LogIn, UserCircle, Home } from "lucide-react";
 
@@ -16,22 +16,26 @@ export default async function Page() {
 
   return (
     <Frame
-      title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
-      leading={
-        <NextLink href="/">
-          <Home size={24} />
-        </NextLink>
-      }
-      trailing={
-        session?.user ? (
-          <NextLink href="/user">
-            <UserCircle size={24} />
-          </NextLink>
-        ) : (
-          <NextLink href="/api/auth/signin">
-            <LogIn size={24} />
-          </NextLink>
-        )
+      header={
+        <Header
+          title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
+          leading={
+            <NextLink href="/">
+              <Home size={24} />
+            </NextLink>
+          }
+          trailing={
+            session?.user ? (
+              <NextLink href="/user">
+                <UserCircle size={24} />
+              </NextLink>
+            ) : (
+              <NextLink href="/api/auth/signin">
+                <LogIn size={24} />
+              </NextLink>
+            )
+          }
+        />
       }
     >
       <Container position="relative" my="m.50">

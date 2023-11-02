@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import twitter from "twitter-text";
-import { throttle } from "lodash-es";
+// import { throttle } from "lodash-es";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -16,8 +16,8 @@ import {
   cleanupPost,
 } from "../../_action";
 
-import { Container, Flex, styled } from "@/lib/style/system/jsx";
-import { Frame } from "@/components/frame";
+import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
+import { Frame, Header } from "@/components/frame";
 import { PenSquare, BookOpen } from "lucide-react";
 import { EditorContent, EditorBar } from "@/components/post";
 
@@ -53,93 +53,77 @@ export function InnerView({ post, userId }: InnerViewProps) {
     (post.accessibleUsers.filter(
       (au) => au.userId === userId && au.level === AccessLevel.EDIT
     ).length || 0) > 0;
-  const [isEditor, setIsEditor] = useState(false);
-  const [absolute, setAbsolute] = useState<{ top: string; bottom: string }>({
-    top: "0",
-    bottom: "100dvh",
-  });
+  const [mode, setMode] = useState<"read" | "edit">("read");
   const [body, setBody] = useState(post.body);
 
   const editor = useEditor({
     extensions: [StarterKit, Link, TipTapImage],
     content: post.body,
     autofocus: true,
-    editable: isEditable,
+    editable: false,
     injectCSS: false,
     onUpdate: ({ editor }) => {
       setBody(editor.getHTML());
     },
     onDestroy: () => cleanupPost({ postId: post.id }),
-    onFocus: () => {
-      setAbsolute({
-        top: `${window.scrollY}px`,
-        bottom: `${window.scrollY + (window.visualViewport?.height || 0)}px`,
-      });
-    },
-    onBlur: () => {
-      setAbsolute({
-        top: `${window.scrollY}px`,
-        bottom: `${window.scrollY + (window.visualViewport?.height || 0)}px`,
-      });
-    },
   });
 
   useEffect(() => {
-    const id = setTimeout(() => {
-      editPost({
-        id: post.id,
-        body,
-      });
-      editPostTags({
-        id: post.id,
-        userId: post.userId,
-        tags: twitter.extractHashtags(body),
-      });
-    }, 1000);
+    const id =
+      isEditable && mode === "edit"
+        ? setTimeout(() => {
+            editPost({
+              id: post.id,
+              body,
+            });
+            editPostTags({
+              id: post.id,
+              userId: post.userId,
+              tags: twitter.extractHashtags(body),
+            });
+          }, 1000)
+        : undefined;
 
     return () => {
       clearTimeout(id);
     };
   }, [body]);
 
-  useEffect(() => {
-    const updateAbsolute = throttle(() => {
-      if (editor?.isFocused) {
-        setAbsolute({
-          top: `${window.scrollY}px`,
-          bottom: `${window.scrollY + (window.visualViewport?.height || 0)}px`,
-        });
-      }
-    }, 1000 / 60);
-    window.addEventListener("scroll", updateAbsolute, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", updateAbsolute);
-    };
-  }, [editor]);
-
   return (
     <Frame
-      title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
-      trailing={
-        <Flex gap="s.200">
-          {isEditable && isEditor && (
-            <styled.button onClick={() => setIsEditor(false)}>
-              <BookOpen size={20} />
-            </styled.button>
-          )}
-          {isEditable && !isEditor && (
-            <styled.button onClick={() => setIsEditor(true)}>
-              <PenSquare size={20} />
-            </styled.button>
-          )}
-        </Flex>
+      header={
+        (isEditable === false || mode === "read") && (
+          <Header
+            title={
+              <styled.img src="/images/logo_palt.png" w="auto" h="s.200" />
+            }
+            trailing={
+              isEditable && (
+                <Flex gap="s.200">
+                  <styled.button
+                    onClick={() => {
+                      setMode("edit");
+                      editor?.setEditable(true);
+                    }}
+                  >
+                    <PenSquare size={20} />
+                  </styled.button>
+                </Flex>
+              )
+            }
+          />
+        )
       }
-      footer={
-        isEditable &&
-        editor && (
+    >
+      <Container>
+        {isEditable && mode === "edit" && editor && (
           <EditorBar
             editor={editor}
+            mode={mode}
+            changeMode={(mode) => {
+              setMode(mode);
+              editor.setEditable(mode === "edit");
+            }}
             uploadFile={async (
               name: string,
               body: Uint8Array,
@@ -161,11 +145,12 @@ export function InnerView({ post, userId }: InnerViewProps) {
               }
             }}
           />
-        )
-      }
-      absolute={editor?.isFocused ? absolute : undefined}
-    >
-      <Container>{editor && <EditorContent editor={editor} />}</Container>
+        )}
+
+        <Box pt={isEditable && mode === "edit" ? "44px" : "0"}>
+          {editor && <EditorContent editor={editor} />}
+        </Box>
+      </Container>
     </Frame>
   );
 }

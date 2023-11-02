@@ -12,11 +12,13 @@ export function EditorContent({ editor }: Props) {
   return (
     <Box
       className={article}
+      position="relative"
       css={{
         fontSize: "16px",
         "& .tiptap": {
-          p: "s.50",
-          pb: "m.100",
+          px: "s.50",
+          py: "s.200",
+          pb: "m.50",
         },
         "& *:focus-visible": {
           outline: "none",

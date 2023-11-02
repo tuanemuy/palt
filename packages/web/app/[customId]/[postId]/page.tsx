@@ -6,7 +6,7 @@ import { getPost } from "../_action";
 
 import NextLink from "next/link";
 import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
-import { Frame } from "@/components/frame";
+import { Frame, Header } from "@/components/frame";
 import { article } from "@/components/article";
 import { Separator } from "@/components/ui/separator";
 import { ChevronLeft, LockKeyhole, UnlockKeyhole } from "lucide-react";
@@ -50,26 +50,32 @@ export default async function Page({ params: { postId } }: Props) {
   if (post) {
     return (
       <Frame
-        title={
-          post.user.profile?.blogName ? (
-            <styled.p fontWeight="bold">{post.user.profile.blogName}</styled.p>
-          ) : (
-            <styled.img src="/images/logo_palt.png" w="auto" h="s.200" />
-          )
-        }
-        leading={
-          <NextLink href={`/${post.user.customId}`}>
-            <ChevronLeft size={24} />
-          </NextLink>
-        }
-        trailing={
-          <Flex gap="s.200">
-            {post?.isPublic ? (
-              <UnlockKeyhole color="warning" size={20} />
-            ) : (
-              <LockKeyhole color="border" size={20} />
-            )}
-          </Flex>
+        header={
+          <Header
+            title={
+              post.user.profile?.blogName ? (
+                <styled.p fontWeight="bold">
+                  {post.user.profile.blogName}
+                </styled.p>
+              ) : (
+                <styled.img src="/images/logo_palt.png" w="auto" h="s.200" />
+              )
+            }
+            leading={
+              <NextLink href={`/${post.user.customId}`}>
+                <ChevronLeft size={24} />
+              </NextLink>
+            }
+            trailing={
+              <Flex gap="s.200">
+                {post?.isPublic ? (
+                  <UnlockKeyhole color="warning" size={20} />
+                ) : (
+                  <LockKeyhole color="border" size={20} />
+                )}
+              </Flex>
+            }
+          />
         }
       >
         <Container position="relative" my="m.50">

@@ -11,7 +11,7 @@ import { Store } from "../_store";
 import NextLink from "next/link";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
-import { Frame } from "@/components/frame";
+import { Frame, Header } from "@/components/frame";
 import { ListItem } from "@/components/post";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -59,6 +59,15 @@ export function View({ user, isSignedIn }: Props) {
     }
   };
 
+  const fetchTags = async () => {
+    try {
+      const result = await getTags({ userId: user.id });
+      setTags(result.tags || []);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     const id = setTimeout(() => {
       fetch(inputTags.value, inputText.value, true);
@@ -71,63 +80,68 @@ export function View({ user, isSignedIn }: Props) {
 
   useEffect(() => {
     fetch(inputTags.value, inputText.value, true);
+    fetchTags();
 
-    (async () => {
-      try {
-        const result = await getTags({ userId: user.id });
-        setTags(result.tags || []);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
+    const id = setInterval(fetchTags, 1000 * 60);
+
+    return () => {
+      clearInterval(id);
+    };
   }, []);
 
   return (
     <Frame
-      title={
-        <Input
-          w="m.300"
-          value={inputText.value}
-          onChange={(e) => {
-            inputText.setValue(e.target.value);
-          }}
+      header={
+        <Header
+          title={
+            <Input
+              w="m.300"
+              value={inputText.value}
+              placeholder="検索"
+              onChange={(e) => {
+                inputText.setValue(e.target.value);
+              }}
+            />
+          }
+          trailing={
+            isSignedIn ? (
+              <NextLink href="/user">
+                <UserCircle size="24" />
+              </NextLink>
+            ) : (
+              <NextLink href="/api/auth/signin">
+                <LogIn size="24" />
+              </NextLink>
+            )
+          }
+          drawer={
+            <Flex direction="column" gap="s.250">
+              {tags?.map((t) => {
+                return (
+                  <Flex key={t.id} align="center" gap="s.100">
+                    <Checkbox
+                      id={t.id}
+                      name="tagIds"
+                      checked={inputTags.value[t.id] !== undefined}
+                      onCheckedChange={(checked) => {
+                        const newTagsInput = inputTags.value;
+                        newTagsInput[t.id] =
+                          typeof checked === "string" || !checked
+                            ? undefined
+                            : t;
+                        inputTags.setValue(newTagsInput);
+                        fetch(newTagsInput, inputText.value, true);
+                      }}
+                    />
+                    <Label htmlFor={t.id} minW="m.100">
+                      {t.name}
+                    </Label>
+                  </Flex>
+                );
+              })}
+            </Flex>
+          }
         />
-      }
-      trailing={
-        isSignedIn ? (
-          <NextLink href="/user">
-            <UserCircle size="24" />
-          </NextLink>
-        ) : (
-          <NextLink href="/api/auth/signin">
-            <LogIn size="24" />
-          </NextLink>
-        )
-      }
-      drawer={
-        <Flex direction="column" gap="s.250">
-          {tags?.map((t) => {
-            return (
-              <Flex key={t.id} align="center" gap="s.100">
-                <Checkbox
-                  id={t.id}
-                  name="tagIds"
-                  checked={inputTags.value[t.id] !== undefined}
-                  onCheckedChange={(checked) => {
-                    const newTagsInput = inputTags.value;
-                    newTagsInput[t.id] =
-                      typeof checked === "string" || !checked ? undefined : t;
-                    inputTags.setValue(newTagsInput);
-                    fetch(newTagsInput, inputText.value, true);
-                  }}
-                />
-                <Label htmlFor={t.id} minW="m.100">
-                  {t.name}
-                </Label>
-              </Flex>
-            );
-          })}
-        </Flex>
       }
       footer={
         <Flex
@@ -223,9 +237,8 @@ export function View({ user, isSignedIn }: Props) {
               <styled.div
                 key={p.id}
                 css={{
-                  "&:not(:first-child)": {
-                    borderTop: "1px solid token(colors.border)",
-                  },
+                  py: "m.100",
+                  borderTop: "1px solid token(colors.border)",
                 }}
               >
                 <ListItem

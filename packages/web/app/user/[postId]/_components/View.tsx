@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import twitter from "twitter-text";
-import { throttle } from "lodash-es";
+// import { throttle } from "lodash-es";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -30,7 +30,7 @@ import {
 
 import NextLink from "next/link";
 import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
-import { Frame } from "@/components/frame";
+import { Frame, Header } from "@/components/frame";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,6 +68,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   ChevronLeft,
+  PenSquare,
   LockKeyhole,
   UnlockKeyhole,
   Menu,
@@ -104,10 +105,7 @@ type InnerViewProps = {
 export function InnerView({ post }: InnerViewProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [absolute, setAbsolute] = useState<{ top: string; bottom: string }>({
-    top: "0",
-    bottom: "100dvh",
-  });
+  const [mode, setMode] = useState<"read" | "edit">("read");
   const [body, setBody] = useState(post.body);
   const [accessibleUsers, setAccessibleUsers] = useState<AccessibleUser[]>(
     post.accessibleUsers
@@ -119,24 +117,12 @@ export function InnerView({ post }: InnerViewProps) {
     extensions: [StarterKit, Link, TipTapImage],
     content: post.body,
     autofocus: true,
-    editable: true,
+    editable: false,
     injectCSS: false,
     onUpdate: ({ editor }) => {
       setBody(editor.getHTML());
     },
     onDestroy: () => cleanupPost({ postId: post.id }),
-    onFocus: () => {
-      setAbsolute({
-        top: `${window.scrollY}px`,
-        bottom: `${window.scrollY + (window.visualViewport?.height || 0)}px`,
-      });
-    },
-    onBlur: () => {
-      setAbsolute({
-        top: `${window.scrollY}px`,
-        bottom: `${window.scrollY + (window.visualViewport?.height || 0)}px`,
-      });
-    },
   });
 
   const share = async (ownerId: string, targetEmailOrName: string) => {
@@ -159,214 +145,242 @@ export function InnerView({ post }: InnerViewProps) {
   };
 
   useEffect(() => {
-    const id = setTimeout(() => {
-      editPost({
-        id: post.id,
-        body,
-      });
-      editPostTags({
-        id: post.id,
-        userId: post.userId,
-        tags: twitter.extractHashtags(body),
-      });
-    }, 1000);
+    const id =
+      mode === "edit"
+        ? setTimeout(() => {
+            editPost({
+              id: post.id,
+              body,
+            });
+            editPostTags({
+              id: post.id,
+              userId: post.userId,
+              tags: twitter.extractHashtags(body),
+            });
+          }, 1000)
+        : undefined;
 
     return () => {
       clearTimeout(id);
     };
   }, [body]);
 
-  useEffect(() => {
-    const updateAbsolute = throttle(() => {
-      if (editor?.isFocused) {
-        setAbsolute({
-          top: `${window.scrollY}px`,
-          bottom: `${window.scrollY + (window.visualViewport?.height || 0)}px`,
-        });
-      }
-    }, 1000 / 60);
-    window.addEventListener("scroll", updateAbsolute, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", updateAbsolute);
-    };
-  }, [editor]);
-
   return (
     <Frame
-      title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
-      leading={
-        <NextLink href="/user">
-          <ChevronLeft size={24} />
-        </NextLink>
-      }
-      trailing={
-        <Flex gap="s.200">
-          <styled.button
-            onClick={async () => {
-              if (post) {
-                setIsPublic(!isPublic);
-                await editPost({
-                  id: post.id,
-                  isPublic: !isPublic,
-                });
-              }
-            }}
-            color={isPublic ? "warning" : "border"}
-          >
-            {isPublic ? <UnlockKeyhole size={20} /> : <LockKeyhole size={20} />}
-          </styled.button>
+      header={
+        mode === "read" && (
+          <Header
+            title={
+              <styled.img src="/images/logo_palt.png" w="auto" h="s.200" />
+            }
+            leading={
+              <NextLink href="/user">
+                <ChevronLeft size={24} />
+              </NextLink>
+            }
+            trailing={
+              <Flex gap="s.200">
+                <styled.button
+                  onClick={async () => {
+                    if (post) {
+                      setIsPublic(!isPublic);
+                      await editPost({
+                        id: post.id,
+                        isPublic: !isPublic,
+                      });
+                    }
+                  }}
+                  color={isPublic ? "warning" : "border"}
+                >
+                  {isPublic ? (
+                    <UnlockKeyhole size={20} />
+                  ) : (
+                    <LockKeyhole size={20} />
+                  )}
+                </styled.button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Menu size={24} />
-            </DropdownMenuTrigger>
+                <styled.button
+                  onClick={() => {
+                    setMode("edit");
+                    editor?.setEditable(true);
+                  }}
+                >
+                  <PenSquare size={20} />
+                </styled.button>
 
-            <DropdownMenuContent>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Share size={16} />
-                    共有
-                  </DropdownMenuItem>
-                </DialogTrigger>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Menu size={24} />
+                  </DropdownMenuTrigger>
 
-                <DialogContent w="l.200" maxW="94%">
-                  <DialogHeader p="s.50" overflow="hidden" textAlign="left">
-                    <DialogTitle>投稿を共有</DialogTitle>
+                  <DropdownMenuContent>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <Share size={16} />
+                          共有
+                        </DropdownMenuItem>
+                      </DialogTrigger>
 
-                    <Flex gap="s.100" mt="s.200">
-                      <Input
-                        value={emailOrName}
-                        onChange={(e) => setEmailOrName(e.target.value || "")}
-                        placeholder="Emailまたはユーザー名を入力"
-                      />
+                      <DialogContent w="l.200" maxW="94%">
+                        <DialogHeader
+                          p="s.50"
+                          overflow="hidden"
+                          textAlign="left"
+                        >
+                          <DialogTitle>投稿を共有</DialogTitle>
 
-                      {post && (
-                        <Button>
-                          <Plus
-                            size={22}
-                            onClick={() => {
-                              if (emailOrName.length > 0) {
-                                share(post.userId, emailOrName);
+                          <Flex gap="s.100" mt="s.200">
+                            <Input
+                              value={emailOrName}
+                              onChange={(e) =>
+                                setEmailOrName(e.target.value || "")
                               }
-                            }}
-                          />
-                        </Button>
-                      )}
-                    </Flex>
-
-                    <Box mt="s.200">
-                      <styled.h3
-                        pb="s.50"
-                        borderBottom="1px solid token(colors.border)"
-                      >
-                        共有済み
-                      </styled.h3>
-
-                      <styled.ul display="flex" direction="column" gap="s.100">
-                        {accessibleUsers?.map((au) => {
-                          return (
-                            <AccessibleUser
-                              key={au.user.id}
-                              postId={post.id}
-                              accessibleUser={au}
-                              onRemove={(userId: string) => {
-                                setAccessibleUsers((prev) =>
-                                  prev.filter((au) => au.userId !== userId)
-                                );
-                                setEmailOrName("");
-                              }}
+                              placeholder="Emailまたはユーザー名を入力"
                             />
-                          );
-                        })}
-                      </styled.ul>
-                    </Box>
 
-                    <Box mt="s.200">
-                      <styled.h3
-                        pb="s.50"
-                        borderBottom="1px solid token(colors.border)"
-                      >
-                        共有リンク
-                      </styled.h3>
+                            {post && (
+                              <Button>
+                                <Plus
+                                  size={22}
+                                  onClick={() => {
+                                    if (emailOrName.length > 0) {
+                                      share(post.userId, emailOrName);
+                                    }
+                                  }}
+                                />
+                              </Button>
+                            )}
+                          </Flex>
 
-                      <Box
-                        overflowX="scroll"
-                        mt="s.50"
-                        py="s.100"
-                        css={{
-                          "& a": {
-                            textDecoration: "underline",
-                          },
-                        }}
-                      >
-                        <NextLink
-                          href={`/shared/${post.id}`}
-                        >{`${process.env.NEXT_PUBLIC_BASE_URL}/shared/${post.id}`}</NextLink>
-                      </Box>
+                          <Box mt="s.200">
+                            <styled.h3
+                              pb="s.50"
+                              borderBottom="1px solid token(colors.border)"
+                            >
+                              共有済み
+                            </styled.h3>
 
-                      <styled.p
-                        mt="s.100"
-                        fontSize=".8rem"
-                        lineHeight="1.75"
-                        color="muted.foreground"
-                      >
-                        共有済みのユーザーはこのリンクからアクセスできます。
-                      </styled.p>
-                    </Box>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
+                            <styled.ul
+                              display="flex"
+                              direction="column"
+                              gap="s.100"
+                            >
+                              {accessibleUsers?.map((au) => {
+                                return (
+                                  <AccessibleUser
+                                    key={au.user.id}
+                                    postId={post.id}
+                                    accessibleUser={au}
+                                    onRemove={(userId: string) => {
+                                      setAccessibleUsers((prev) =>
+                                        prev.filter(
+                                          (au) => au.userId !== userId
+                                        )
+                                      );
+                                      setEmailOrName("");
+                                    }}
+                                  />
+                                );
+                              })}
+                            </styled.ul>
+                          </Box>
 
-              {post && (
-                <DropdownMenuItem asChild>
-                  <NextLink href={`/user/${post.id}/revision`}>
-                    <History size={16} />
-                    履歴
-                  </NextLink>
-                </DropdownMenuItem>
-              )}
+                          <Box mt="s.200">
+                            <styled.h3
+                              pb="s.50"
+                              borderBottom="1px solid token(colors.border)"
+                            >
+                              共有リンク
+                            </styled.h3>
 
-              <DropdownMenuSeparator />
+                            <Box
+                              overflowX="scroll"
+                              mt="s.50"
+                              py="s.100"
+                              css={{
+                                "& a": {
+                                  textDecoration: "underline",
+                                },
+                              }}
+                            >
+                              <NextLink
+                                href={`/shared/${post.id}`}
+                              >{`${process.env.NEXT_PUBLIC_BASE_URL}/shared/${post.id}`}</NextLink>
+                            </Box>
 
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Trash2 size={16} />
-                    削除
-                  </DropdownMenuItem>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      削除した投稿を元に戻すことはできません。
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                    <AlertDialogAction asChild>
-                      <button
-                        onClick={async () => {
-                          removePost({ id: post.id });
-                          router.push("/user");
-                        }}
-                      >
-                        削除
-                      </button>
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </Flex>
+                            <styled.p
+                              mt="s.100"
+                              fontSize=".8rem"
+                              lineHeight="1.75"
+                              color="muted.foreground"
+                            >
+                              共有済みのユーザーはこのリンクからアクセスできます。
+                            </styled.p>
+                          </Box>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+
+                    {post && (
+                      <DropdownMenuItem asChild>
+                        <NextLink href={`/user/${post.id}/revision`}>
+                          <History size={16} />
+                          履歴
+                        </NextLink>
+                      </DropdownMenuItem>
+                    )}
+
+                    <DropdownMenuSeparator />
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <Trash2 size={16} />
+                          削除
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            本当に削除しますか？
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            削除した投稿を元に戻すことはできません。
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                          <AlertDialogAction asChild>
+                            <button
+                              onClick={async () => {
+                                removePost({ id: post.id });
+                                router.push("/user");
+                              }}
+                            >
+                              削除
+                            </button>
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </Flex>
+            }
+          />
+        )
       }
-      footer={
-        editor && (
+    >
+      <Container position="relative">
+        {mode === "edit" && editor && (
           <EditorBar
             editor={editor}
+            mode={mode}
+            changeMode={(mode) => {
+              setMode(mode);
+              editor.setEditable(mode === "edit");
+            }}
             uploadFile={async (
               name: string,
               body: Uint8Array,
@@ -388,11 +402,12 @@ export function InnerView({ post }: InnerViewProps) {
               }
             }}
           />
-        )
-      }
-      absolute={editor?.isFocused ? absolute : undefined}
-    >
-      <Container>{editor && <EditorContent editor={editor} />}</Container>
+        )}
+
+        <Box pt={mode === "edit" ? "44px" : "0"}>
+          {editor && <EditorContent editor={editor} />}
+        </Box>
+      </Container>
     </Frame>
   );
 }

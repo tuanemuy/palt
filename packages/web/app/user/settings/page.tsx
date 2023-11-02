@@ -4,7 +4,7 @@ import { getUser } from "../_action";
 import NextLink from "next/link";
 import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
 import { Separator } from "@/components/ui/separator";
-import { Frame } from "@/components/frame";
+import { Frame, Header } from "@/components/frame";
 import { Form } from "./_components/Form";
 import { SignOut } from "./_components/SignOut";
 import { ChevronLeft } from "lucide-react";
@@ -19,11 +19,15 @@ export default async function Page() {
 
   return (
     <Frame
-      title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
-      leading={
-        <NextLink href="/user">
-          <ChevronLeft size={24} />
-        </NextLink>
+      header={
+        <Header
+          title={<styled.img src="/images/logo_palt.png" w="auto" h="s.200" />}
+          leading={
+            <NextLink href="/user">
+              <ChevronLeft size={24} />
+            </NextLink>
+          }
+        />
       }
     >
       <Container py="m.50">

@@ -24,7 +24,7 @@ type Props = {
 
 export function RevisionListItem({ revision, onClick }: Props) {
   return (
-    <Box py="m.50">
+    <Box>
       <Box
         position="relative"
         maxH={{ base: "l.100", md: "l.200" }}
