@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import twitter from "twitter-text";
-// import { throttle } from "lodash-es";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -18,7 +17,7 @@ import {
 
 import { Container, Box, Flex, styled } from "@/lib/style/system/jsx";
 import { Frame, Header } from "@/components/frame";
-import { PenSquare, BookOpen } from "lucide-react";
+import { PenSquare } from "lucide-react";
 import { EditorContent, EditorBar } from "@/components/post";
 
 type Props = {
